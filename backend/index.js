@@ -1,6 +1,6 @@
 require('dotenv').config();
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 const PORT = process.env.PORT || 8000;
 const cors = require('cors');
 
@@ -12,6 +12,11 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
 
+const teacherRoutes = require('./src/routes/teacherRoute');
+app.use('/teacher', teacherRoutes);
+
+const studentRoutes = require('./src/routes/studentRoute');
+app.use('/student', studentRoutes);
 
 
 app.listen(PORT, () => {
