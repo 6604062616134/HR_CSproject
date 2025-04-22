@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 
-function Navbar() {
+function NavbarProject() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isTeacherListOpen, setIsTeacherListOpen] = useState(false);
     const [isStaffListOpen, setIsStaffListOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleToggle = () => {
         setIsMenuOpen(!isMenuOpen); // สลับสถานะเปิด/ปิดเมนูหลัก
@@ -18,16 +19,144 @@ function Navbar() {
         setIsStaffListOpen(!isStaffListOpen); // สลับสถานะเปิด/ปิดรายชื่อเจ้าหน้าที่
     };
 
+    const handleModalToggle = () => {
+        setIsModalOpen(!isModalOpen); // เปิด/ปิด Modal
+    };
+
     return (
         <div>
             <nav className="bg-[#000066] p-4 fixed top-0 left-0 w-full z-50">
-                <div className="container mx-auto flex items-center gap-10">
-                    <button onClick={handleToggle} className="text-white text-xl z-10">
-                        ☰
+                <div className="container mx-auto flex items-center justify-between">
+                    {/* โลโก้และเมนู */}
+                    <div className="flex items-center gap-10">
+                        <button onClick={handleToggle} className="text-white text-xl z-10">
+                            ☰
+                        </button>
+                        <div className="text-white text-lg font-bold">HR-CS</div>
+                    </div>
+                    {/* ปุ่มเพิ่มข้อมูลนักศึกษา */}
+                    <button
+                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all shadow-md"
+                        onClick={handleModalToggle}
+                    >
+                        เพิ่มข้อมูลนักศึกษา
                     </button>
-                    <div className="text-white text-lg font-bold">HR-CS</div>
                 </div>
             </nav>
+            {/* Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[800px]">
+                        <h2 className="text-lg font-bold mb-4">เพิ่มข้อมูลนักศึกษา</h2>
+                        <form>
+                            <div className="flex flex-wrap gap-4">
+                                {/* <div className="flex-1 min-w-[150px]">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">ลำดับ</label>
+                                    <input
+                                        type="number"
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="ลำดับ"
+                                    />
+                                </div> */}
+                                <div className="flex-1 min-w-[150px]">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">วันที่</label>
+                                    <input
+                                        type="date"
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div className="flex-[2] min-w-[300px]">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="ชื่อ-นามสกุล"
+                                    />
+                                </div>
+                                <div className="flex-[2] min-w-[300px]">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">ปริญญานิพนธ์เรื่อง (ไทย)</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="หัวข้อปริญญานิพนธ์ (ไทย)"
+                                    />
+                                </div>
+                                <div className="flex-[2] min-w-[300px]">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">ปริญญานิพนธ์เรื่อง (อังกฤษ)</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="หัวข้อปริญญานิพนธ์ (อังกฤษ)"
+                                    />
+                                </div>
+                                <div className="flex-1 min-w-[150px]">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">ประธานกรรมการ</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="ประธานกรรมการ"
+                                    />
+                                </div>
+                                <div className="flex-1 min-w-[150px]">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">กรรมการ</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="กรรมการ"
+                                    />
+                                </div>
+                                <div className="flex-1 min-w-[150px]">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">อาจารย์ที่ปรึกษาหลัก</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="อาจารย์ที่ปรึกษาหลัก"
+                                    />
+                                </div>
+                                <div className="flex-1 min-w-[150px]">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">อาจารย์ที่ปรึกษาร่วม</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="อาจารย์ที่ปรึกษาร่วม"
+                                    />
+                                </div>
+                                <div className="flex-1 min-w-[150px]">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">ปีการศึกษา</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="ปีการศึกษา"
+                                    />
+                                </div>
+                                <div className="flex-1 min-w-[150px]">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">ห้องสอบ</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="ห้องสอบ"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex justify-end gap-4 mt-6">
+                                <button
+                                    type="button"
+                                    className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+                                    onClick={handleModalToggle}
+                                >
+                                    ยกเลิก
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                >
+                                    บันทึก
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
             {/* ไซด์บาร์ */}
             <div
                 className={`fixed top-0 left-0 h-full bg-[#000066] text-white transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'
@@ -294,4 +423,4 @@ function Navbar() {
     );
 }
 
-export default Navbar;
+export default NavbarProject;
