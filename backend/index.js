@@ -18,6 +18,8 @@ app.use('/teacher', teacherRoutes);
 const studentRoutes = require('./src/routes/studentRoute');
 app.use('/student', studentRoutes);
 
+const assignationRoutes = require('./src/routes/assignationRoute');
+app.use('/assignation', assignationRoutes);
 
 app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}`)

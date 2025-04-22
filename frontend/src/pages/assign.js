@@ -39,16 +39,32 @@ function Assign() {
         };
     }, [isDropdownOpen]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log({
-            eventName,
-            eventDateStart,
-            eventDateEnd,
-            number,
-            docName,
-        });
-        alert('ข้อมูลถูกส่งเรียบร้อยแล้ว!');
+    const createAssignation = async () => {
+        try {
+            const response = await axios.post('http://localhost:8000/assignation/create', {
+                eventName,
+                eventDateStart,
+                eventDateEnd,
+                number,
+                docName,
+                detail,
+                selectedTeachers, // ส่งข้อมูลอาจารย์ที่เหลือกไปด้วย
+            });
+            console.log('Assignation created:', response.data);
+        } catch (error) {
+            console.error('Error fetching teachers:', error);
+        }
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // ป้องกันการรีเฟรชหน้า
+        try {
+            await createAssignation(); // เรียก API เพื่อสร้างข้อมูล
+            alert('ข้อมูลถูกส่งเรียบร้อยแล้ว!');
+        } catch (error) {
+            console.error('Error creating assignation:', error);
+            alert('เกิดข้อผิดพลาดในการส่งข้อมูล');
+        }
     };
 
     const handleCheckboxChange = (e, teacher) => {
@@ -61,6 +77,16 @@ function Assign() {
         }
     };
 
+    const handleReset = () => {
+        setEventName('');
+        setEventDateStart('');
+        setEventDateEnd('');
+        setNumber('');
+        setDocName('');
+        setDetail('');
+        setSelectedTeachers([]); // ล้างรายชื่ออาจารย์ที่เลือกด้วย
+    };
+
     return (
         <div>
             <Navbar />
@@ -68,7 +94,16 @@ function Assign() {
                 <form onSubmit={handleSubmit} className="w-full max-w-5xl flex gap-8">
                     {/* ส่วนช่องกรอกข้อมูล */}
                     <div className="flex-1 space-y-6">
-                        <h2 className="text-2xl font-semibold text-gray-800">แบบฟอร์มกำหนดกิจกรรม</h2>
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-2xl font-semibold text-gray-800">แบบฟอร์มกำหนดกิจกรรม</h2>
+                            <button
+                                type="button"
+                                onClick={handleReset}
+                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all shadow-lg"
+                            >
+                                รีเซ็ต
+                            </button>
+                        </div>
                         <div>
                             <label className="block mb-1 text-sm text-gray-600">ชื่อกิจกรรม</label>
                             <input
@@ -140,13 +175,13 @@ function Assign() {
 
                     <div className='flex flex-col w-1/2 gap-4 mb-2'>
                         {/* ส่วนรายชื่ออาจารย์ที่เลือก */}
-                        <div className="flex-1 p-4 rounded-lg border relative h-[455px] overflow-hidden">
+                        <div className="flex-1 p-4 rounded-lg border relative h-[455px] overflow-visible">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="font-medium text-gray-800">อาจารย์ที่เลือก</h3>
                                 <div className="relative">
-                                    <div className='flex flex-row gap-2'>
+                                    <div className="flex flex-row gap-2">
                                         <div
-                                            className="px-4 py-2 border rounded-lg bg-white cursor-pointer focus:outline-none shadow-lg"
+                                            className="px-4 py-2 border rounded-lg bg-white cursor-pointer focus:outline-none shadow-lg z-50"
                                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                         >
                                             เลือกอาจารย์
@@ -161,7 +196,7 @@ function Assign() {
                                     </div>
                                     {isDropdownOpen && (
                                         <div
-                                            className="absolute z-10 mt-2 w-64 max-h-60 overflow-y-auto bg-white border rounded-lg shadow"
+                                            className="absolute z-[9999] mt-2 w-64 max-h-64 overflow-y-auto bg-white border rounded-lg shadow-lg"
                                             style={{ top: '100%', right: 0 }}
                                         >
                                             {teachers.map((teacher) => (
@@ -191,8 +226,8 @@ function Assign() {
                                                 }`}
                                         >
                                             <span>{teacher.t_AcademicRanks}</span>
-                                            <span className='ml-1'>{teacher.t_name}</span>
-                                            <span className='ml-4 font-bold'>{teacher.t_code}</span>
+                                            <span className="ml-1">{teacher.t_name}</span>
+                                            <span className="ml-4 font-bold">{teacher.t_code}</span>
                                         </div>
                                     ))
                                 ) : (
