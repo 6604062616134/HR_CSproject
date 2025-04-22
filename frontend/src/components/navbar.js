@@ -43,7 +43,7 @@ function Navbar() {
                 <div className="p-4">
                     <h2 className="text-lg font-bold mb-4">เมนู</h2>
                     <NavLink
-                        to="/assign"
+                        to="/"
                         className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
                         onClick={handleToggle}
                     >

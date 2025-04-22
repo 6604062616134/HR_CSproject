@@ -11,6 +11,7 @@ function Assign() {
     const [teachers, setTeachers] = useState([]); // รายชื่ออาจารย์
     const [selectedTeachers, setSelectedTeachers] = useState([]); // เก็บอาจารย์ที่ถูกเลือก
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [detail, setDetail] = useState(''); // รายละเอียดงาน
 
     useEffect(() => {
         const fetchTeachers = async () => {
@@ -125,75 +126,86 @@ function Assign() {
                                 required
                             />
                         </div>
+                        <div>
+                            <label className="block mb-1 text-sm text-gray-600">รายละเอียด</label>
+                            <textarea
+                                value={detail}
+                                onChange={(e) => setDetail(e.target.value)}
+                                className="w-full px-4 py-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 h-40 resize-none"
+                                placeholder="รายละเอียดงาน"
+                                required
+                            />
+                        </div>
+                    </div>
 
+                    <div className='flex flex-col w-1/2 gap-4 mb-2'>
+                        {/* ส่วนรายชื่ออาจารย์ที่เลือก */}
+                        <div className="flex-1 p-4 rounded-lg border relative h-[455px] overflow-hidden">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="font-medium text-gray-800">อาจารย์ที่เลือก</h3>
+                                <div className="relative">
+                                    <div className='flex flex-row gap-2'>
+                                        <div
+                                            className="px-4 py-2 border rounded-lg bg-white cursor-pointer focus:outline-none shadow-lg"
+                                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                        >
+                                            เลือกอาจารย์
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all shadow-lg"
+                                            onClick={() => setSelectedTeachers([])}
+                                        >
+                                            ล้างรายการ
+                                        </button>
+                                    </div>
+                                    {isDropdownOpen && (
+                                        <div
+                                            className="absolute z-10 mt-2 w-64 max-h-60 overflow-y-auto bg-white border rounded-lg shadow"
+                                            style={{ top: '100%', right: 0 }}
+                                        >
+                                            {teachers.map((teacher) => (
+                                                <div key={teacher.t_ID} className="flex items-center px-4 py-2 hover:bg-gray-50">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`teacher-${teacher.t_ID}`}
+                                                        checked={selectedTeachers.some((t) => t.t_ID === teacher.t_ID)}
+                                                        onChange={(e) => handleCheckboxChange(e, teacher)}
+                                                        className="mr-2"
+                                                    />
+                                                    <label htmlFor={`teacher-${teacher.t_ID}`} className="text-sm text-gray-700">
+                                                        {teacher.t_name}
+                                                    </label>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="max-h-[400px] overflow-y-auto pb-10">
+                                {selectedTeachers.length > 0 ? (
+                                    selectedTeachers.map((teacher, index) => (
+                                        <div
+                                            key={teacher.t_ID}
+                                            className={`flex items-center text-sm text-gray-700 ${index !== selectedTeachers.length - 1 ? 'border-b border-gray-300 pb-2 mb-2' : ''
+                                                }`}
+                                        >
+                                            <span>{teacher.t_AcademicRanks}</span>
+                                            <span className='ml-1'>{teacher.t_name}</span>
+                                            <span className='ml-4 font-bold'>{teacher.t_code}</span>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-gray-500">ยังไม่มีอาจารย์ที่ถูกเลือก</p>
+                                )}
+                            </div>
+                        </div>
                         <button
                             type="submit"
                             className="w-full bg-[#000066] hover:bg-gray-700 text-white py-2 rounded-lg transition-all shadow-lg"
                         >
                             ยืนยัน
                         </button>
-                    </div>
-
-                    {/* ส่วนรายชื่ออาจารย์ที่เลือก */}
-                    <div className="flex-1 p-4 rounded-lg border relative h-[455px] overflow-hidden">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-medium text-gray-800">อาจารย์ที่เลือก</h3>
-                            <div className="relative">
-                                <div className='flex flex-row gap-2'>
-                                    <div
-                                        className="px-4 py-2 border rounded-lg bg-white cursor-pointer focus:outline-none shadow-lg"
-                                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                    >
-                                        เลือกอาจารย์
-                                    </div>
-                                    <button
-                                        type="button"
-                                        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all shadow-lg"
-                                        onClick={() => setSelectedTeachers([])}
-                                    >
-                                        ล้างรายการ
-                                    </button>
-                                </div>
-                                {isDropdownOpen && (
-                                    <div
-                                        className="absolute z-10 mt-2 w-64 max-h-60 overflow-y-auto bg-white border rounded-lg shadow"
-                                        style={{ top: '100%', right: 0 }}
-                                    >
-                                        {teachers.map((teacher) => (
-                                            <div key={teacher.t_ID} className="flex items-center px-4 py-2 hover:bg-gray-50">
-                                                <input
-                                                    type="checkbox"
-                                                    id={`teacher-${teacher.t_ID}`}
-                                                    checked={selectedTeachers.some((t) => t.t_ID === teacher.t_ID)}
-                                                    onChange={(e) => handleCheckboxChange(e, teacher)}
-                                                    className="mr-2"
-                                                />
-                                                <label htmlFor={`teacher-${teacher.t_ID}`} className="text-sm text-gray-700">
-                                                    {teacher.t_name}
-                                                </label>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                        <div className="max-h-[400px] overflow-y-auto pb-10">
-                            {selectedTeachers.length > 0 ? (
-                                selectedTeachers.map((teacher, index) => (
-                                    <div
-                                        key={teacher.t_ID}
-                                        className={`flex items-center text-sm text-gray-700 ${index !== selectedTeachers.length - 1 ? 'border-b border-gray-300 pb-2 mb-2' : ''
-                                            }`}
-                                    >
-                                        <span>{teacher.t_AcademicRanks}</span>
-                                        <span className='ml-1'>{teacher.t_name}</span>
-                                        <span className='ml-4 font-bold'>{teacher.t_code}</span>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-sm text-gray-500">ยังไม่มีอาจารย์ที่ถูกเลือก</p>
-                            )}
-                        </div>
                     </div>
                 </form>
             </div>
