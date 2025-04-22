@@ -23,7 +23,7 @@ const TeacherController = {
             console.error('Error fetching teacher:', error);
             res.status(500).json({ error: 'Internal server error' });
         }
-    }
+    },
 }
 
 module.exports = TeacherController;

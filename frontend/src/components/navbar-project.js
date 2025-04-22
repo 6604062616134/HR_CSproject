@@ -1,11 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import axios from 'axios';
 
 function NavbarProject() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isTeacherListOpen, setIsTeacherListOpen] = useState(false);
     const [isStaffListOpen, setIsStaffListOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [teachers, setTeachers] = useState([]);
+    const [staff, setStaff] = useState([]);
+
+    useEffect(() => {
+        const fetchTeachers = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/teacher/');
+                setTeachers(response.data);
+            } catch (error) {
+                console.error('Error fetching teachers:', error);
+            }
+        };
+
+        const fetchStaff = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/staff/');
+                setStaff(response.data);
+            } catch (error) {
+                console.error('Error fetching staff:', error);
+            }
+        };
+
+        fetchTeachers();
+        fetchStaff();
+    }, []);
 
     const handleToggle = () => {
         setIsMenuOpen(!isMenuOpen); // สลับสถานะเปิด/ปิดเมนูหลัก
@@ -205,160 +231,16 @@ function NavbarProject() {
                     {/* รายชื่ออาจารย์ */}
                     {isTeacherListOpen && (
                         <div className="ml-4 mt-2 max-h-64 overflow-y-auto scrollbar-custom">
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                ผศ.ดร.อัครา ประโยชน์
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                ผศ.ดร.อภิสิทธิ์ รัตนาตรานุรักษ์
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                อ.อนุสรณ์ วงษ์สนิท
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                รศ.ดร. เบญจพร ลิ้มธรรมาภรณ์
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                ผศ.ดร.เฉียบวุฒิ รัตนวิไลสกุล
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                อ.เอิญ สุริยะฉาย
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                รศ.ดร.กฤดาภัทร สีหารี
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                ผศ.ดร.คันธารัตน์ อเนกบุณย์
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                รศ.ดร.กอบเกียรติ สระอุบล
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                ผศ.ดร.ลือพล พิพานเมฆาภรณ์
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                อ.ดร.ณัฐกิตติ์ จิตรเอื้อตระกูล
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                ผศ.ดร.นิกร สุทธิเสงี่ยม
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                อ.ณัฐวุฒิ สร้อยดอกสน
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                ผศ.นนทกร สถิตานนท์
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                อ.ปรัชญาพร เลี้ยงสุทธิสกนธ์
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                รศ.ดร.ปรวัฒน์ วิสูตรศักดิ์
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                ผศ.ดร.สรร รัตนสัญญา
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                ผศ.สถิตย์ ประสมพันธ์
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                ผศ.ดร.สุวัจชัย กมลสันติโรจน์
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                รศ.ดร.ธนภัทร์ อนุศาสน์อมรกุล
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                อ.ดร.ธรรศฏภณ สุระศักดิ์
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                อ.ยนต์ชนก เขาแก้ว
-                            </NavLink>
+                            {teachers.map((teacher) => (
+                                <NavLink
+                                    key={teacher.t_ID}
+                                    to={`/detail/teacher/${teacher.t_ID}`} // ส่ง type "teacher" และ id
+                                    className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
+                                    onClick={handleToggle}
+                                >
+                                    {teacher.t_name}
+                                </NavLink>
+                            ))}
                         </div>
                     )}
                     <button
@@ -373,48 +255,16 @@ function NavbarProject() {
                     {/* รายชื่อเจ้าหน้าที่ */}
                     {isStaffListOpen && (
                         <div className="ml-4 mt-2 max-h-64 overflow-y-auto scrollbar-custom">
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                นาย ฐิตินันท์ ขันทอง
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                นางสาว อาลิษา หุ่นไทย
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                นางสาว จันทิมา อรรฆรุจิรัตน์
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                นาย เกรียงไกร เอี่ยมวงค์
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                นายนที ปัญญาประสิทธิ์
-                            </NavLink>
-                            <NavLink
-                                to="/detail"
-                                className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                onClick={handleToggle}
-                            >
-                                นางสาว อุษณีย์ บัลลังน้อย
-                            </NavLink>
+                            {staff.map((staffMember) => (
+                                <NavLink
+                                    key={staffMember.s_ID}
+                                    to={`/detail/staff/${staffMember.s_ID}`} // ส่ง type "staff" และ id
+                                    className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
+                                    onClick={handleToggle}
+                                >
+                                    {staffMember.s_name}
+                                </NavLink>
+                            ))}
                         </div>
                     )}
                 </div>

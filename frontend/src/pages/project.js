@@ -27,17 +27,17 @@ function Project() {
                     <table className="min-w-full bg-white border border-gray-300 rounded-lg">
                         <thead>
                             <tr className="bg-gray-200 text-gray-700">
-                                <th className="px-4 py-2 border text-sm w-12">ลำดับ</th>
-                                <th className="px-4 py-2 border text-sm w-48">วันที่</th>
-                                <th className="px-4 py-2 border text-sm w-48">ปริญญานิพนธ์เรื่อง(ไทย)</th>
-                                <th className="px-4 py-2 border text-sm w-48">ปริญญานิพนธ์เรื่อง(อังกฤษ)</th>
-                                <th className="px-4 py-2 border text-sm w-48">ชื่อ-นามสกุล</th>
-                                <th className="px-4 py-2 border text-sm w-48">ประธานกรรมการ</th>
-                                <th className="px-4 py-2 border text-sm w-48">กรรมการ</th>
-                                <th className="px-4 py-2 border text-sm w-48">อาจารย์ที่ปรึกษาหลัก</th>
-                                <th className="px-4 py-2 border text-sm w-48">อาจารย์ที่ปรึกษาร่วม</th>
-                                <th className="px-4 py-2 border text-sm w-24">ปีการศึกษา</th>
-                                <th className="px-4 py-2 border text-sm w-24">ห้องสอบ</th>
+                                <th className="px-4 py-2 border text-xs w-12">ลำดับ</th>
+                                <th className="px-4 py-2 border text-xs w-48">วันที่</th>
+                                <th className="px-4 py-2 border text-xs w-48">ปริญญานิพนธ์เรื่อง(ไทย)</th>
+                                <th className="px-4 py-2 border text-xs w-48">ปริญญานิพนธ์เรื่อง(อังกฤษ)</th>
+                                <th className="px-4 py-2 border text-xs w-48">ชื่อ-นามสกุล</th>
+                                <th className="px-4 py-2 border text-xs w-48">ประธานกรรมการ</th>
+                                <th className="px-4 py-2 border text-xs w-48">กรรมการ</th>
+                                <th className="px-4 py-2 border text-xs w-48">อาจารย์ที่ปรึกษาหลัก</th>
+                                <th className="px-4 py-2 border text-xs w-48">อาจารย์ที่ปรึกษาร่วม</th>
+                                <th className="px-4 py-2 border text-xs w-24">ปีการศึกษา</th>
+                                <th className="px-4 py-2 border text-xs w-24">ห้องสอบ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -62,12 +62,12 @@ function Project() {
                                         <br />
                                         {student.FLname2}
                                     </td>
-                                    <td className="px-4 py-2 border text-sm break-words whitespace-normal">{student.chairman}</td>
-                                    <td className="px-4 py-2 border text-sm break-words whitespace-normal">{student.director}</td>
-                                    <td className="px-4 py-2 border text-sm break-words whitespace-normal">{student.MainMentor}</td>
-                                    <td className="px-4 py-2 border text-sm break-words whitespace-normal">{student.CoMentor}</td>
-                                    <td className="px-4 py-2 border text-sm break-words whitespace-normal">{student.year}</td>
-                                    <td className="px-4 py-2 border text-sm break-words whitespace-normal">{student.room}</td>
+                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">{student.chairman}</td>
+                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">{student.director}</td>
+                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">{student.MainMentor}</td>
+                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">{student.CoMentor}</td>
+                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">{student.year}</td>
+                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">{student.room}</td>
                                 </tr>
                             ))}
                         </tbody>

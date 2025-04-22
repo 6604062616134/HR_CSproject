@@ -1,3 +1,4 @@
+const { create } = require('mathjs');
 const db = require('../db');
 
 const StudentController = {
@@ -7,6 +8,15 @@ const StudentController = {
             res.json(students[0]); // Assuming the first element of the array contains the results
         } catch (error) {
             console.error('Error fetching students:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    async createstudentthesisinfo(req, res) {
+        try {
+            
+        } catch (error) {
+            console.error('Error creating student thesis info:', error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }

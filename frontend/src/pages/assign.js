@@ -10,8 +10,11 @@ function Assign() {
     const [docName, setDocName] = useState(''); //ชื่อเอกสาร
     const [teachers, setTeachers] = useState([]); // รายชื่ออาจารย์
     const [selectedTeachers, setSelectedTeachers] = useState([]); // เก็บอาจารย์ที่ถูกเลือก
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [detail, setDetail] = useState(''); // รายละเอียดงาน
+    const [staff, setStaff] = useState([]); // รายชื่อเจ้าหน้าที่
+    const [selectedStaff, setSelectedStaff] = useState([]);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isDropdownStaffOpen, setIsDropdownStaffOpen] = useState(false);
 
     useEffect(() => {
         const fetchTeachers = async () => {
@@ -27,6 +30,19 @@ function Assign() {
     }, []);
 
     useEffect(() => {
+        const fetchStaff = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/staff/'); // URL ของ API
+                setStaff(response.data); // อัปเดต state ด้วยข้อมูลเจ้าหน้าที่
+            } catch (error) {
+                console.error('Error fetching staff:', error);
+            }
+        };
+
+        fetchStaff();
+    }, []);
+
+    useEffect(() => {
         if (isDropdownOpen) {
             document.body.style.overflow = 'hidden';
         } else {
@@ -39,6 +55,19 @@ function Assign() {
         };
     }, [isDropdownOpen]);
 
+    useEffect(() => {
+        if (isDropdownStaffOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cleanup เมื่อ component ถูก unmount
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [isDropdownStaffOpen]);
+
     const createAssignation = async () => {
         try {
             const response = await axios.post('http://localhost:8000/assignation/create', {
@@ -48,7 +77,8 @@ function Assign() {
                 number,
                 docName,
                 detail,
-                selectedTeachers, // ส่งข้อมูลอาจารย์ที่เหลือกไปด้วย
+                selectedTeachers,
+                selectedStaff,
             });
             console.log('Assignation created:', response.data);
         } catch (error) {
@@ -77,6 +107,16 @@ function Assign() {
         }
     };
 
+    const handleStaffCheckboxChange = (e, staffMember) => {
+        if (e.target.checked) {
+            setSelectedStaff((prev) => [...prev, staffMember]);
+        } else {
+            setSelectedStaff((prev) =>
+                prev.filter((s) => s.s_ID !== staffMember.s_ID)
+            );
+        }
+    };
+
     const handleReset = () => {
         setEventName('');
         setEventDateStart('');
@@ -84,7 +124,11 @@ function Assign() {
         setNumber('');
         setDocName('');
         setDetail('');
-        setSelectedTeachers([]); // ล้างรายชื่ออาจารย์ที่เลือกด้วย
+    };
+
+    const handleResetSelections = () => {
+        setSelectedTeachers([]); // ล้างรายชื่ออาจารย์ที่เลือก
+        setSelectedStaff([]);    // ล้างรายชื่อเจ้าหน้าที่ที่เลือก
     };
 
     return (
@@ -99,7 +143,7 @@ function Assign() {
                             <button
                                 type="button"
                                 onClick={handleReset}
-                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all shadow-lg"
+                                className="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-gray-600 transition-all duration-300 ease-in-out shadow-md text-xs"
                             >
                                 รีเซ็ต
                             </button>
@@ -174,30 +218,23 @@ function Assign() {
                     </div>
 
                     <div className='flex flex-col w-1/2 gap-4 mb-2'>
-                        {/* ส่วนรายชื่ออาจารย์ที่เลือก */}
                         <div className="flex-1 p-4 rounded-lg border relative h-[455px] overflow-visible">
-                            <div className="flex justify-between items-center mb-4">
+                            <div className="flex items-center mb-4 gap-4">
                                 <h3 className="font-medium text-gray-800">อาจารย์ที่เลือก</h3>
                                 <div className="relative">
-                                    <div className="flex flex-row gap-2">
-                                        <div
-                                            className="px-4 py-2 border rounded-lg bg-white cursor-pointer focus:outline-none shadow-lg z-50"
-                                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                        >
-                                            เลือกอาจารย์
-                                        </div>
-                                        <button
-                                            type="button"
-                                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all shadow-lg"
-                                            onClick={() => setSelectedTeachers([])}
-                                        >
-                                            ล้างรายการ
-                                        </button>
+                                    <div
+                                        className="px-2 py-1 border rounded-md bg-white cursor-pointer focus:outline-none shadow-md z-50 text-xs hover:bg-gray-100 hover:text-blue-600 transition-all duration-300 ease-in-out flex items-center justify-between"
+                                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    >
+                                        เลือกอาจารย์
+                                        <span className={`ml-2 transform transition-transform duration-300 ease-in-out ${isDropdownOpen ? 'rotate-180' : ''}`}>
+                                            ▼
+                                        </span>
                                     </div>
                                     {isDropdownOpen && (
                                         <div
                                             className="absolute z-[9999] mt-2 w-64 max-h-64 overflow-y-auto bg-white border rounded-lg shadow-lg"
-                                            style={{ top: '100%', right: 0 }}
+                                            style={{ top: '100%' }}
                                         >
                                             {teachers.map((teacher) => (
                                                 <div key={teacher.t_ID} className="flex items-center px-4 py-2 hover:bg-gray-50">
@@ -216,28 +253,81 @@ function Assign() {
                                         </div>
                                     )}
                                 </div>
+
+                                <div className="relative">
+                                    <div
+                                        className="px-2 py-1 border rounded-md bg-white cursor-pointer focus:outline-none shadow-md z-50 text-xs hover:bg-gray-100 hover:text-blue-600 transition-all duration-300 ease-in-out flex items-center justify-between"
+                                        onClick={() => setIsDropdownStaffOpen(!isDropdownStaffOpen)}
+                                    >
+                                        เลือกเจ้าหน้าที่
+                                        <span className={`ml-2 transform transition-transform duration-300 ease-in-out ${isDropdownStaffOpen ? 'rotate-180' : ''}`}>
+                                            ▼
+                                        </span>
+                                    </div>
+                                    {isDropdownStaffOpen && (
+                                        <div
+                                            className="absolute z-[9999] mt-2 w-64 max-h-64 overflow-y-auto bg-white border rounded-lg shadow-lg"
+                                            style={{ top: '100%' }}
+                                        >
+                                            {staff.map((staffMember) => (
+                                                <div key={staffMember.s_ID} className="flex items-center px-4 py-2 hover:bg-gray-50">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`staff-${staffMember.s_ID}`}
+                                                        checked={selectedStaff.some((s) => s.s_ID === staffMember.s_ID)}
+                                                        onChange={(e) => handleStaffCheckboxChange(e, staffMember)}
+                                                        className="mr-2"
+                                                    />
+                                                    <label htmlFor={`staff-${staffMember.s_ID}`} className="text-sm text-gray-700">
+                                                        {staffMember.s_name}
+                                                    </label>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={handleResetSelections}
+                                    className="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-gray-600 transition-all shadow-md text-xs"
+                                >
+                                    รีเซ็ตรายการที่เลือก
+                                </button>
                             </div>
                             <div className="max-h-[400px] overflow-y-auto pb-10">
-                                {selectedTeachers.length > 0 ? (
-                                    selectedTeachers.map((teacher, index) => (
-                                        <div
-                                            key={teacher.t_ID}
-                                            className={`flex items-center text-sm text-gray-700 ${index !== selectedTeachers.length - 1 ? 'border-b border-gray-300 pb-2 mb-2' : ''
-                                                }`}
-                                        >
-                                            <span>{teacher.t_AcademicRanks}</span>
-                                            <span className="ml-1">{teacher.t_name}</span>
-                                            <span className="ml-4 font-bold">{teacher.t_code}</span>
-                                        </div>
-                                    ))
+                                {selectedTeachers.length > 0 || selectedStaff.length > 0 ? (
+                                    <>
+                                        {/* แสดงรายชื่ออาจารย์ที่เลือก */}
+                                        {selectedTeachers.map((teacher, index) => (
+                                            <div
+                                                key={teacher.t_ID}
+                                                className="flex items-center text-sm text-gray-700 border-b border-gray-300 pb-2 mb-2"
+                                            >
+                                                <span>{teacher.t_AcademicRanks}</span>
+                                                <span className="ml-1">{teacher.t_name}</span>
+                                                <span className="ml-4 font-bold">{teacher.t_code}</span>
+                                            </div>
+                                        ))}
+
+                                        {/* แสดงรายชื่อเจ้าหน้าที่ที่เลือก */}
+                                        {selectedStaff.map((staffMember, index) => (
+                                            <div
+                                                key={staffMember.s_ID}
+                                                className="flex items-center text-sm text-gray-700 border-b border-gray-300 pb-2 mb-2"
+                                            >
+                                                <span>{staffMember.s_name}</span>
+                                            </div>
+                                        ))}
+                                    </>
                                 ) : (
-                                    <p className="text-sm text-gray-500">ยังไม่มีอาจารย์ที่ถูกเลือก</p>
+                                    <p className="text-sm text-gray-500">ยังไม่มีอาจารย์หรือเจ้าหน้าที่ถูกเลือก</p>
                                 )}
                             </div>
                         </div>
                         <button
                             type="submit"
-                            className="w-full bg-[#000066] hover:bg-gray-700 text-white py-2 rounded-lg transition-all shadow-lg"
+                            className="w-full bg-[#000066] hover:bg-gray-700 text-white py-2 rounded-lg transition-all duration-300 ease-in-out shadow-lg"
                         >
                             ยืนยัน
                         </button>
