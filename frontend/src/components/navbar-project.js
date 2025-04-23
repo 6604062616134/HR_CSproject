@@ -62,7 +62,7 @@ function NavbarProject() {
                     </div>
                     {/* ปุ่มเพิ่มข้อมูลนักศึกษา */}
                     <button
-                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all shadow-md"
+                        className="px-2 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 hover:scale-105 transition-all duration-300 ease-in-out shadow-md text-sm"
                         onClick={handleModalToggle}
                     >
                         เพิ่มข้อมูลนักศึกษา

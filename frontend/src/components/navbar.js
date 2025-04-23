@@ -137,10 +137,18 @@ function Navbar() {
                             ))}
                         </div>
                     )}
-
+                    <button
+                        onClick={handleStaffToggle}
+                        className="w-full flex justify-between items-center px-4 py-2 text-white font-bold hover:bg-white hover:text-black rounded transition-all duration-300"
+                    >
+                        เจ้าหน้าที่
+                        <span className={`transform transition-transform ${isStaffListOpen ? 'rotate-180' : ''}`}>
+                            ▼
+                        </span>
+                    </button>
                     {/* รายชื่อเจ้าหน้าที่ */}
                     {isStaffListOpen && (
-                        <div className="ml-4 mt-2 max-h-64 overflow-y-auto scrollbar-custom">
+                        <div className="ml-4 mt-2 mb-4 max-h-64 overflow-y-auto scrollbar-custom">
                             {staff.map((staffMember) => (
                                 <NavLink
                                     key={staffMember.s_ID}

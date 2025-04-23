@@ -59,15 +59,57 @@ const AssignationController = {
     },
 
     async getAssignationById(req, res) {
-        const { id } = req.params;
+        const { id } = req.params; // รับ id จาก URL
+        const { type } = req.query; // รับ type (teacher หรือ staff) จาก query parameter
+
         try {
-            const assignation = await db.query('SELECT * FROM assignation WHERE a_ID = ?', [id]);
-            if (assignation[0].length === 0) {
-                return res.status(404).json({ error: 'Assignation not found' });
+            let query = '';
+            const params = [];
+
+            if (type === 'teacher') {
+                query = 'SELECT * FROM assignation WHERE JSON_CONTAINS(t_ID, ?, "$")'; // ค้นหาใน JSON Array ของ t_ID
+                params.push(JSON.stringify(Number(id))); // แปลง id เป็น JSON String
+            } else if (type === 'staff') {
+                query = 'SELECT * FROM assignation WHERE JSON_CONTAINS(s_ID, ?, "$")'; // ค้นหาใน JSON Array ของ s_ID
+                params.push(JSON.stringify(Number(id))); // แปลง id เป็น JSON String
+            } else {
+                return res.status(400).json({ error: 'Invalid type. Must be "teacher" or "staff".' });
             }
-            res.json(assignation[0][0]);
+
+            console.log('Executing Query:', query, params); // ตรวจสอบ Query และพารามิเตอร์
+            const [assignations] = await db.query(query, params);
+
+            if (assignations.length === 0) {
+                return res.status(404).json({ error: 'No assignations found for the given ID and type.' });
+            }
+
+            res.status(200).json(assignations);
         } catch (error) {
-            console.error('Error fetching assignation:', error);
+            console.error('Error fetching assignation by ID:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    async getAssignationByIds(req, res) {
+        try {
+            const { t_ID, s_ID } = req.query;
+            let query = 'SELECT * FROM assignation WHERE 1=1';
+            const params = [];
+
+            if (t_ID) {
+                query += ' AND t_ID = ?';
+                params.push(t_ID);
+            }
+
+            if (s_ID) {
+                query += ' AND s_ID = ?';
+                params.push(s_ID);
+            }
+
+            const [assignations] = await db.query(query, params);
+            res.status(200).json(assignations);
+        } catch (error) {
+            console.error('Error fetching assignations by IDs:', error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
