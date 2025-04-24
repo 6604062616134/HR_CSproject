@@ -26,16 +26,24 @@ const AssignationController = {
                 selectedStaff = [],
             } = req.body;
 
-            // ค้นหา t_ID จาก selectedTeachers ในตาราง teacher
-            const teacherIdsQuery = `SELECT t_ID FROM teacher WHERE t_ID IN (?)`;
-            const [teacherIdsResult] = await db.query(teacherIdsQuery, [selectedTeachers.map((teacher) => teacher.t_ID)]);
-            const teacherIds = teacherIdsResult.map((row) => row.t_ID); // ดึงเฉพาะ t_ID ออกมาเป็นอาร์เรย์
+            let teacherIds = [];
+            let staffIds = [];
 
-            const staffIdQuery = `SELECT s_ID FROM staff WHERE s_ID IN (?)`;
-            const [staffIdsResult] = await db.query(staffIdQuery, [selectedStaff.map((staff) => staff.s_ID)]);
-            const staffIds = staffIdsResult.map((row) => row.s_ID); // ดึงเฉพาะ s_ID ออกมาเป็นอาร์เรย์
+            // ตรวจสอบ selectedTeachers
+            if (selectedTeachers.length > 0) {
+                const teacherIdsQuery = `SELECT t_ID FROM teacher WHERE t_ID IN (?)`;
+                const [teacherIdsResult] = await db.query(teacherIdsQuery, [selectedTeachers.map((teacher) => teacher.t_ID)]);
+                teacherIds = teacherIdsResult.map((row) => row.t_ID); // ดึงเฉพาะ t_ID ออกมาเป็นอาร์เรย์
+            }
 
-            // Insert into assignation table พร้อมเก็บ t_ID ในรูปแบบ JSON
+            // ตรวจสอบ selectedStaff
+            if (selectedStaff.length > 0) {
+                const staffIdQuery = `SELECT s_ID FROM staff WHERE s_ID IN (?)`;
+                const [staffIdsResult] = await db.query(staffIdQuery, [selectedStaff.map((staff) => staff.s_ID)]);
+                staffIds = staffIdsResult.map((row) => row.s_ID); // ดึงเฉพาะ s_ID ออกมาเป็นอาร์เรย์
+            }
+
+            // Insert into assignation table พร้อมเก็บ t_ID และ s_ID ในรูปแบบ JSON
             const insertAssignationQuery = `INSERT INTO assignation (a_number, createdDate, modifiedDate, detail, docName, eventDateStart, eventDateEnd, eventName, t_ID, s_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
             const assignationValues = [
                 number,
@@ -47,7 +55,7 @@ const AssignationController = {
                 eventDateEnd,
                 eventName,
                 JSON.stringify(teacherIds), // แปลง t_ID เป็น JSON ก่อนเก็บในฐานข้อมูล
-                JSON.stringify(staffIds)
+                JSON.stringify(staffIds),  // แปลง s_ID เป็น JSON ก่อนเก็บในฐานข้อมูล
             ];
             await db.query(insertAssignationQuery, assignationValues);
 

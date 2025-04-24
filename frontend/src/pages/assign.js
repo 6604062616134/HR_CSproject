@@ -91,6 +91,8 @@ function Assign() {
         try {
             await createAssignation(); // เรียก API เพื่อสร้างข้อมูล
             alert('ข้อมูลถูกส่งเรียบร้อยแล้ว!');
+            handleReset(); // รีเซ็ตข้อมูลในช่องอินพุต
+            handleResetSelections(); // รีเซ็ตการเลือกอาจารย์และเจ้าหน้าที่
         } catch (error) {
             console.error('Error creating assignation:', error);
             alert('เกิดข้อผิดพลาดในการส่งข้อมูล');

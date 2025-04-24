@@ -3,75 +3,324 @@ import axios from 'axios';
 import NavbarProject from '../components/navbar-project';
 
 function Project() {
-    const [students, setStudents] = useState([]); // สร้าง State สำหรับเก็บข้อมูลนักศึกษา
+    const [students, setStudents] = useState([]);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editData, setEditData] = useState(null);
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/student/all');
+            setStudents(response.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('http://localhost:8000/student/all');
-                setStudents(response.data); // เก็บข้อมูลใน State
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
         fetchData();
     }, []);
 
+    const handleEditModalOpen = (student) => {
+        setEditData(student); // ตั้งค่าข้อมูลที่ต้องการแก้ไข
+        setIsEditModalOpen(true); // เปิด Modal
+    };
+
+    const handleEditModalClose = () => {
+        setEditData(null); // ล้างข้อมูลที่แก้ไข
+        setIsEditModalOpen(false); // ปิด Modal
+    };
+
+    const handleDeleteStudent = async () => {
+        const confirmDelete = window.confirm('คุณต้องการลบข้อมูลนักศึกษาทั้งหมดใช่หรือไม่?');
+        if (!confirmDelete) {
+            return; // หากผู้ใช้กด "ยกเลิก" ให้หยุดการทำงาน
+        }
+
+        try {
+            await axios.delete(`http://localhost:8000/student/delete/${editData.thesisID}`);
+            alert('ลบข้อมูลสำเร็จ');
+            fetchData(); // โหลดข้อมูลใหม่
+            handleEditModalClose(); // ปิด Modal
+        } catch (error) {
+            console.error('Error deleting student data:', error);
+            alert('เกิดข้อผิดพลาดในการลบข้อมูล');
+        }
+    };
+
     return (
         <div className="flex flex-col h-screen bg-gray-100">
-            <NavbarProject />
-            <div className="flex flex-col p-4 mt-16">
+            <NavbarProject fetchData={fetchData} className="print:hidden" />
+            <div className="flex flex-col p-4 mt-16 print:mt-0 flex-grow w-full">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">รายชื่อนักศึกษาที่เข้าสอบโปรเจค</h2>
-                <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white border border-gray-300 rounded-lg">
+                <div className="overflow-x-auto flex-grow w-full">
+                    <table className="w-full bg-white border border-gray-300 rounded-lg print-cell">
                         <thead>
                             <tr className="bg-gray-200 text-gray-700">
-                                <th className="px-4 py-2 border text-xs w-12">ลำดับ</th>
-                                <th className="px-4 py-2 border text-xs w-48">วันที่</th>
-                                <th className="px-4 py-2 border text-xs w-48">ปริญญานิพนธ์เรื่อง(ไทย)</th>
-                                <th className="px-4 py-2 border text-xs w-48">ปริญญานิพนธ์เรื่อง(อังกฤษ)</th>
-                                <th className="px-4 py-2 border text-xs w-48">ชื่อ-นามสกุล</th>
-                                <th className="px-4 py-2 border text-xs w-48">ประธานกรรมการ</th>
-                                <th className="px-4 py-2 border text-xs w-48">กรรมการ</th>
-                                <th className="px-4 py-2 border text-xs w-48">อาจารย์ที่ปรึกษาหลัก</th>
-                                <th className="px-4 py-2 border text-xs w-48">อาจารย์ที่ปรึกษาร่วม</th>
-                                <th className="px-4 py-2 border text-xs w-24">ปีการศึกษา</th>
-                                <th className="px-4 py-2 border text-xs w-24">ห้องสอบ</th>
+                                <th className="px-4 py-2 border text-xs col-index">ลำดับ</th>
+                                <th className="px-4 py-2 border text-xs col-date">วันที่สอบ</th>
+                                <th className="px-4 py-2 border text-xs col-thesis">หัวข้อ</th>
+                                <th className="px-4 py-2 border text-xs col-id">รหัส</th>
+                                <th className="px-4 py-2 border text-xs col-name">ชื่อ-นามสกุล</th>
+                                <th className="px-4 py-2 border text-xs col-chairman">ประธานกรรมการ</th>
+                                <th className="px-4 py-2 border text-xs col-director">กรรมการ</th>
+                                <th className="px-4 py-2 border text-xs col-main-mentor">อาจารย์ที่ปรึกษาหลัก</th>
+                                <th className="px-4 py-2 border text-xs col-co-mentor">อาจารย์ที่ปรึกษาร่วม</th>
+                                <th className="px-4 py-2 border text-xs col-year">ปีการศึกษา</th>
+                                <th className="px-4 py-2 border text-xs col-room">ห้องสอบ</th>
+                                <th className="px-4 py-2 border text-xs col-grade">เกรดที่ได้</th>
+                                <th className="px-4 py-2 border text-xs col-note">หมายเหตุ</th>
+                                <th className="px-4 py-2 border text-xs print:hidden col-edit">แก้ไข</th>
                             </tr>
                         </thead>
                         <tbody>
                             {students.map((student, index) => (
-                                <tr key={student.id} className="text-gray-700 hover:bg-gray-100">
-                                    <td className="px-4 py-2 border text-sm text-center">{index + 1}</td>
-                                    <td className="px-4 py-2 border text-sm w-48">
+                                <tr key={student.id}>
+                                    <td className="px-4 py-2 border text-xs text-center col-index">{index + 1}</td>
+                                    <td className="px-4 py-2 border text-xs text-center col-date">
                                         {new Date(student.datetime).toLocaleDateString('th-TH', {
-                                            year: 'numeric',
-                                            month: 'long',
                                             day: 'numeric',
+                                            month: 'numeric',
+                                            year: 'numeric',
                                         })}
                                     </td>
-                                    <td className="px-4 py-2 border text-sm break-words whitespace-normal max-w-[200px]">
-                                        {student.thesisnameTH}
+                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal col-thesis">
+                                        {student.thesisnameTH || student.thesisnameEN ? (
+                                            <>
+                                                {student.thesisnameTH && <span>{student.thesisnameTH}</span>}
+                                                {student.thesisnameEN && student.thesisnameTH && <br />}
+                                                {student.thesisnameEN && <span>{student.thesisnameEN}</span>}
+                                            </>
+                                        ) : (
+                                            <span>ไม่มีข้อมูล</span>
+                                        )}
                                     </td>
-                                    <td className="px-4 py-2 border text-sm break-words whitespace-normal max-w-[200px]">
-                                        {student.thesisnameEN}
+                                    <td className="px-2 py-2 border text-xs break-words whitespace-normal col-id">
+                                        {student.studentCode1}
+                                        <br />
+                                        {student.studentCode2}
                                     </td>
-                                    <td className="px-4 py-2 border text-sm break-words whitespace-normal">
+                                    <td className="px-2 py-2 border text-xs break-words whitespace-normal col-name">
                                         {student.FLname1}
                                         <br />
                                         {student.FLname2}
                                     </td>
-                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">{student.chairman}</td>
-                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">{student.director}</td>
-                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">{student.MainMentor}</td>
-                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">{student.CoMentor}</td>
-                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">{student.year}</td>
-                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">{student.room}</td>
+                                    <td className="px-2 py-2 border text-xs text-center col-chairman">{student.chairman}</td>
+                                    <td className="px-2 py-2 border text-xs text-center col-director">{student.director}</td>
+                                    <td className="px-2 py-2 border text-xs text-center col-main-mentor">{student.MainMentor}</td>
+                                    <td className="px-2 py-2 border text-xs text-center col-co-mentor">{student.CoMentor}</td>
+                                    <td className="px-2 py-2 border text-xs text-center col-year">{student.year}</td>
+                                    <td className="px-2 py-2 border text-xs text-center col-room">{student.room}</td>
+                                    <td className="px-2 py-2 border text-xs text-center col-grade">{student.grade}</td>
+                                    <td className="px-2 py-2 border text-xs text-center col-note">{student.note}</td>
+                                    <td className="px-2 py-2 border text-xs text-center print:hidden col-edit">
+                                        <button
+                                            className="px-2 py-1 bg-[#000066] text-white rounded hover:bg-gray-600 shadow-lg"
+                                            onClick={() => handleEditModalOpen(student)}
+                                        >
+                                            แก้ไข
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                    {isEditModalOpen && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                            <div className="bg-white p-6 rounded-lg shadow-lg w-[800px]">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h2 className="text-lg font-bold">แก้ไขข้อมูลนักศึกษา</h2>
+                                    <button
+                                        type="button"
+                                        className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 no-print"
+                                        onClick={handleDeleteStudent}
+                                    >
+                                        ลบข้อมูลทั้งหมด
+                                    </button>
+                                </div>
+                                <form
+                                    onSubmit={async (e) => {
+                                        e.preventDefault();
+                                        try {
+                                            await axios.put(`http://localhost:8000/student/update/${editData.thesisID}`, editData);
+                                            alert('แก้ไขข้อมูลสำเร็จ');
+                                            fetchData(); // โหลดข้อมูลใหม่
+                                            handleEditModalClose(); // ปิด Modal
+                                        } catch (error) {
+                                            console.error('Error updating student data:', error);
+                                            alert('เกิดข้อผิดพลาดในการแก้ไขข้อมูล');
+                                        }
+                                    }}
+                                >
+                                    <div className="flex flex-wrap gap-4">
+                                        <div className="flex-1 min-w-[150px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">วันที่สอบ</label>
+                                            <input
+                                                type="date"
+                                                name="datetime"
+                                                value={editData?.datetime || ''}
+                                                onChange={(e) => setEditData({ ...editData, datetime: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex-[2] min-w-[300px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">ปริญญานิพนธ์เรื่อง (ไทย)</label>
+                                            <input
+                                                type="text"
+                                                name="thesisnameTH"
+                                                value={editData?.thesisnameTH || ''}
+                                                onChange={(e) => setEditData({ ...editData, thesisnameTH: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex-[2] min-w-[300px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">ปริญญานิพนธ์เรื่อง (อังกฤษ)</label>
+                                            <input
+                                                type="text"
+                                                name="thesisnameEN"
+                                                value={editData?.thesisnameEN || ''}
+                                                onChange={(e) => setEditData({ ...editData, thesisnameEN: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-[150px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">รหัสนักศึกษา 1</label>
+                                            <input
+                                                type="text"
+                                                name="studentCode1"
+                                                value={editData?.studentCode1 || ''}
+                                                onChange={(e) => setEditData({ ...editData, studentCode1: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-[150px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">รหัสนักศึกษา 2</label>
+                                            <input
+                                                type="text"
+                                                name="studentCode2"
+                                                value={editData?.studentCode2 || ''}
+                                                onChange={(e) => setEditData({ ...editData, studentCode2: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex-[2] min-w-[300px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล (นักศึกษา 1)</label>
+                                            <input
+                                                type="text"
+                                                name="FLname1"
+                                                value={editData?.FLname1 || ''}
+                                                onChange={(e) => setEditData({ ...editData, FLname1: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex-[2] min-w-[300px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล (นักศึกษา 2)</label>
+                                            <input
+                                                type="text"
+                                                name="FLname2"
+                                                value={editData?.FLname2 || ''}
+                                                onChange={(e) => setEditData({ ...editData, FLname2: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-[150px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">ประธานกรรมการ</label>
+                                            <input
+                                                type="text"
+                                                name="chairman"
+                                                value={editData?.chairman || ''}
+                                                onChange={(e) => setEditData({ ...editData, chairman: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-[150px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">กรรมการ</label>
+                                            <input
+                                                type="text"
+                                                name="director"
+                                                value={editData?.director || ''}
+                                                onChange={(e) => setEditData({ ...editData, director: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-[150px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">อาจารย์ที่ปรึกษาหลัก</label>
+                                            <input
+                                                type="text"
+                                                name="MainMentor"
+                                                value={editData?.MainMentor || ''}
+                                                onChange={(e) => setEditData({ ...editData, MainMentor: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-[150px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">อาจารย์ที่ปรึกษาร่วม</label>
+                                            <input
+                                                type="text"
+                                                name="CoMentor"
+                                                value={editData?.CoMentor || ''}
+                                                onChange={(e) => setEditData({ ...editData, CoMentor: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-[150px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">ปีการศึกษา</label>
+                                            <input
+                                                type="text"
+                                                name="year"
+                                                value={editData?.year || ''}
+                                                onChange={(e) => setEditData({ ...editData, year: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-[150px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">ห้องสอบ</label>
+                                            <input
+                                                type="text"
+                                                name="room"
+                                                value={editData?.room || ''}
+                                                onChange={(e) => setEditData({ ...editData, room: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-[150px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">เกรดที่ได้</label>
+                                            <input
+                                                type="text"
+                                                name="grade"
+                                                value={editData?.grade || ''}
+                                                onChange={(e) => setEditData({ ...editData, grade: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex-[2] min-w-[300px]">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">หมายเหตุ</label>
+                                            <textarea
+                                                name="note"
+                                                value={editData?.note || ''}
+                                                onChange={(e) => setEditData({ ...editData, note: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-end gap-4 mt-6">
+                                        <button
+                                            type="button"
+                                            className="px-4 py-2 bg-gray-300 rounded-lg shadow-lg hover:bg-gray-400"
+                                            onClick={handleEditModalClose}
+                                        >
+                                            ยกเลิก
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="px-4 py-2 bg-[#000066] text-white shadow-lg rounded-lg hover:bg-gray-600"
+                                        >
+                                            บันทึก
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

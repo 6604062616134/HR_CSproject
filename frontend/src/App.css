@@ -13,6 +13,91 @@
   }
 }
 
+@media print {
+  .no-print {
+    display: none !important;
+    /* ซ่อนองค์ประกอบที่ไม่ต้องการพิมพ์ */
+  }
+
+  .print-cell {
+    padding: 2px !important;
+    font-size: 6px !important;
+    text-align: center !important;
+  }
+
+  body {
+    background-color: white;
+    color: black;
+    font-size: 4px;
+    margin: 0;
+    padding: 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  th,
+  td {
+    border: 1px solid black;
+    /* เพิ่มเส้นขอบ */
+    padding: 2px !important;
+    /* ลดระยะห่างในเซลล์ */
+    font-size: 6px !important;
+    /* ลดขนาดตัวอักษรในตาราง */
+    text-align: center;
+    /* จัดข้อความให้อยู่ตรงกลาง */
+    word-wrap: break-word;
+    /* ตัดคำในเซลล์หากข้อความยาวเกิน */
+  }
+
+  h2 {
+    text-align: center;
+    /* จัดหัวข้อให้อยู่ตรงกลาง */
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 10px;
+    /* ลดขนาดตัวอักษรของหัวข้อ */
+  }
+
+  .col-index {
+    width: 5% !important;
+  }
+
+  .col-id {
+    width: 5% !important;
+  }
+
+  .col-name {
+    width: 30% !important;
+  }
+
+  .col-thesis {
+    width: 30% !important;
+  }
+
+  .col-chairman,
+  .col-director,
+  .col-main-mentor,
+  .col-co-mentor,
+  .col-year,
+  .col-room,
+  .col-grade,
+  .col-note {
+    width: 5% !important;
+  }
+
+}
+
+@page {
+  size: A4 landscape;
+  /* ตั้งค่าหน้ากระดาษเป็น A4 แนวนอน */
+  margin: 1cm;
+  /* ตั้งค่าขอบกระดาษ */
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -32,6 +117,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 
-function Navbar() {
+function Navbar({ className = "" }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isTeacherListOpen, setIsTeacherListOpen] = useState(false);
     const [isStaffListOpen, setIsStaffListOpen] = useState(false);
@@ -69,18 +69,21 @@ function Navbar() {
 
     return (
         <div>
-            <nav className="bg-[#000066] p-4 fixed top-0 left-0 w-full z-50">
-                <div className="container mx-auto flex items-center gap-10">
-                    <button onClick={handleToggle} className="text-white text-xl z-10">
-                        ☰
-                    </button>
-                    <div className="text-white text-lg font-bold">HR-CS</div>
+            <nav className="bg-[#000066] p-4 fixed top-0 left-0 w-full z-50 print:hidden">
+                <div className="flex items-center justify-between px-4 lg:px-8">
+                    {/* ปุ่ม ☰ หรือ ✕ */}
+                    <div className="flex items-center gap-4">
+                        <button onClick={handleToggle} className="text-white text-xl z-10">
+                            {isMenuOpen ? '✕' : '☰'}
+                        </button>
+                        <div className="text-white text-lg font-bold">HR-CS</div>
+                    </div>
                 </div>
             </nav>
             {/* ไซด์บาร์ */}
             <div
                 className={`fixed top-0 left-0 h-full bg-[#000066] text-white transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'
-                    } transition-transform duration-300 ease-in-out z-40 overflow-y-auto`}
+                    } transition-transform duration-300 ease-in-out z-40 overflow-y-auto print:hidden`}
                 style={{ width: '304px' }}
             >
                 <button
@@ -105,13 +108,6 @@ function Navbar() {
                     >
                         สอบโปรเจค
                     </NavLink>
-                    <NavLink
-                        to="/grade"
-                        className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                        onClick={handleToggle}
-                    >
-                        ประชุมเกรดภาควิชา
-                    </NavLink>
                     <hr className="my-4 border-t border-1 border-gray-300 w-64 mx-auto" />
                     <button
                         onClick={handleTeacherToggle}
@@ -126,14 +122,15 @@ function Navbar() {
                     {isTeacherListOpen && (
                         <div className="ml-4 mt-2 max-h-64 overflow-y-auto scrollbar-custom">
                             {teachers.map((teacher) => (
-                                <NavLink
+                                <button
                                     key={teacher.t_ID}
-                                    to={`/detail/teacher/${teacher.t_ID}`} // เพิ่ม type "teacher" ใน URL
+                                    onClick={() => {
+                                        window.location.href = `/detail/teacher/${teacher.t_ID}`;
+                                    }}
                                     className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                    onClick={handleToggle}
                                 >
                                     {teacher.t_name}
-                                </NavLink>
+                                </button>
                             ))}
                         </div>
                     )}
@@ -150,14 +147,15 @@ function Navbar() {
                     {isStaffListOpen && (
                         <div className="ml-4 mt-2 mb-4 max-h-64 overflow-y-auto scrollbar-custom">
                             {staff.map((staffMember) => (
-                                <NavLink
+                                <button
                                     key={staffMember.s_ID}
-                                    to={`/detail/staff/${staffMember.s_ID}`} // เพิ่ม type "staff" ใน URL
+                                    onClick={() => {
+                                        window.location.href = `/detail/staff/${staffMember.s_ID}`;
+                                    }}
                                     className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
-                                    onClick={handleToggle}
                                 >
                                     {staffMember.s_name}
-                                </NavLink>
+                                </button>
                             ))}
                         </div>
                     )}

@@ -11,7 +11,8 @@ function Detail({ type }) {
     const [endDate, setEndDate] = useState('');
     const [filterStartDate, setFilterStartDate] = useState('');
     const [filterEndDate, setFilterEndDate] = useState('');
-    const [sortOrder, setSortOrder] = useState("asc"); // เริ่มต้นเรียงจากน้อยไปมาก
+    const [sortOrder, setSortOrder] = useState("asc");
+    const [sortField, setSortField] = useState("eventDateStart"); 
 
     useEffect(() => {
         const fetchDetail = async () => {
@@ -57,7 +58,7 @@ function Detail({ type }) {
         if (!filterStart && !filterEnd) return true;
 
         if (filterStart && filterEnd) {
-            return eventStart <= filterEnd && eventEnd >= filterStart;
+            return eventStart >= filterStart && eventEnd <= filterEnd;
         }
 
         if (filterStart) {
@@ -71,40 +72,43 @@ function Detail({ type }) {
         return true;
     });
 
-    const toggleSortOrder = () => {
-        setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+    const toggleSortOrder = (field) => {
+        setSortField(field); // ตั้งค่าฟิลด์ที่ต้องการเรียงลำดับ
+        setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc")); // สลับลำดับการเรียง
     };
 
     return (
         <div>
-            <Navbar />
-            <div className="container mx-auto mt-10 p-10">
+            <Navbar className="print:hidden" />
+            <div className="container mx-auto mt-10 p-4 sm:p-6 lg:p-10">
                 {type === 'teacher' ? (
-                    <p>{personDetail.t_AcademicRanks} {personDetail.t_name} <strong>{personDetail.t_code}</strong></p>
+                    <p className="text-lg font-semibold">
+                        {personDetail.t_AcademicRanks} {personDetail.t_name} <strong>{personDetail.t_code}</strong>
+                    </p>
                 ) : (
-                    <p>{personDetail.s_name}</p>
+                    <p className="text-lg font-semibold">{personDetail.s_name}</p>
                 )}
-                <div className="flex items-center w-1/2 mt-4 gap-2">
+                <div className="flex flex-wrap items-center gap-4 mt-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">วันที่เริ่มต้น</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1 print:hidden">วันที่เริ่มต้น</label>
                         <input
                             type="date"
-                            className="w-40 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-40 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 print:hidden"
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">วันที่สิ้นสุด</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1 print:hidden">วันที่สิ้นสุด</label>
                         <input
                             type="date"
-                            className="w-40 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-40 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 print:hidden"
                             value={endDate}
                             onChange={(e) => setEndDate(e.target.value)}
                         />
                     </div>
                     <button
-                        className="px-4 py-2 mt-6 bg-[#000066] text-white rounded-lg shadow-lg hover:bg-gray-600 focus:outline-none"
+                        className="px-4 py-2 mt-6 bg-[#000066] text-white rounded-lg shadow-lg hover:bg-gray-600 focus:outline-none print:hidden"
                         onClick={() => {
                             if (!startDate) {
                                 alert("กรุณาเลือกวันที่เริ่มต้นก่อนค้นหา");
@@ -126,25 +130,26 @@ function Detail({ type }) {
                 </div>
                 <div className="mt-6">
                     <h2 className="text-lg font-bold mb-4">ข้อมูลกิจกรรม</h2>
-                    <table className="table-fixed w-full border-collapse border border-gray-300">
+                    <table className="table-auto w-full border-collapse border border-gray-300">
                         <thead>
                             <tr className="bg-gray-100">
-                                <th className="border border-gray-300 px-4 py-2 w-12">ลำดับ</th>
-                                <th className="border border-gray-300 px-4 py-2 w-32">เลขคำสั่ง</th>
-                                <th className="border border-gray-300 px-4 py-2 w-1/3">ชื่อกิจกรรม</th>
-                                <th className="border border-gray-300 px-4 py-2 w-16">ชื่อเอกสาร</th>
+                                <th className="border border-gray-300 px-4 py-2 w-12 text-xs">ลำดับ</th>
+                                <th className="border border-gray-300 px-4 py-2 w-12 text-xs">เลขคำสั่ง</th>
+                                <th className="border border-gray-300 px-4 py-2 w-12 text-xs">ชื่อเอกสาร</th>
+                                <th className="border border-gray-300 px-4 py-2 w-1/3 text-xs">ชื่อกิจกรรม</th>
+                                <th className="border border-gray-300 px-4 py-2 w-24 text-xs">รายละเอียด</th>
                                 <th
-                                    className="border border-gray-300 px-4 py-2 w-16 cursor-pointer hover:bg-gray-200"
+                                    className="border border-gray-300 px-4 py-2 w-12 text-xs cursor-pointer hover:bg-gray-200"
                                     onClick={toggleSortOrder}
                                 >
-                                    วันที่เริ่มต้น {sortOrder === "asc" ? "▲" : "▼"}
+                                    วันที่เริ่มต้น {sortOrder === "asc" ? <span className="print:hidden">▲</span> : <span className="print:hidden">▼</span>}
                                 </th>
-                                <th className="border border-gray-300 px-4 py-2 w-16">วันที่สิ้นสุด</th>
+                                <th className="border border-gray-300 px-4 py-2 text-xs w-12">วันที่สิ้นสุด</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredAssignations.length > 0 ? (
-                                [...filteredAssignations] // ทำสำเนาก่อน จะได้ไม่แก้ตัวแปรเดิม
+                                [...filteredAssignations]
                                     .sort((a, b) => {
                                         const dateA = new Date(a.eventDateStart);
                                         const dateB = new Date(b.eventDateStart);
@@ -161,19 +166,20 @@ function Detail({ type }) {
 
                                         return (
                                             <tr key={`${assignation.a_number}-${index}`} className="text-center">
-                                                <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
-                                                <td className="border border-gray-300 px-4 py-2">{assignation.a_number}</td>
-                                                <td className="border border-gray-300 px-4 py-2">{assignation.eventName}</td>
-                                                <td className="border border-gray-300 px-4 py-2">{assignation.docName}</td>
-                                                <td className="border border-gray-300 px-4 py-2">{formatDate(assignation.eventDateStart)}</td>
-                                                <td className="border border-gray-300 px-4 py-2">{formatDate(assignation.eventDateEnd)}</td>
+                                                <td className="border border-gray-300 px-4 py-2 text-xs">{index + 1}</td>
+                                                <td className="border border-gray-300 px-4 py-2 text-xs">{assignation.a_number}</td>
+                                                <td className="border border-gray-300 px-4 py-2 text-xs">{assignation.docName}</td>
+                                                <td className="border border-gray-300 px-4 py-2 text-xs">{assignation.eventName}</td>
+                                                <td className="border border-gray-300 px-4 py-2 text-xs">{assignation.detail}</td>
+                                                <td className="border border-gray-300 px-4 py-2 text-xs">{formatDate(assignation.eventDateStart)}</td>
+                                                <td className="border border-gray-300 px-4 py-2 text-xs">{formatDate(assignation.eventDateEnd)}</td>
                                             </tr>
                                         );
                                     })
                             ) : (
                                 <tr>
                                     <td colSpan="6" className="border border-gray-300 px-4 py-2 text-center">
-                                        ไม่มีข้อมูลที่ตรงกับช่วงวันที่ที่เลือก
+                                        ไม่มีข้อมูล
                                     </td>
                                 </tr>
                             )}
