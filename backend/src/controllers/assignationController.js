@@ -14,7 +14,7 @@ const AssignationController = {
     async createAssignation(req, res) {
         try {
             const {
-                number,
+                a_number,
                 createdDate = new Date(),
                 modifiedDate = new Date(),
                 detail,
@@ -46,7 +46,7 @@ const AssignationController = {
             // Insert into assignation table พร้อมเก็บ t_ID และ s_ID ในรูปแบบ JSON
             const insertAssignationQuery = `INSERT INTO assignation (a_number, createdDate, modifiedDate, detail, docName, eventDateStart, eventDateEnd, eventName, t_ID, s_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
             const assignationValues = [
-                number,
+                a_number,
                 createdDate,
                 modifiedDate,
                 detail,
@@ -120,7 +120,50 @@ const AssignationController = {
             console.error('Error fetching assignations by IDs:', error);
             res.status(500).json({ error: 'Internal server error' });
         }
+    },
+
+    async deleteAssignation(req, res) {
+        const { id } = req.params; // รับ id จาก URL
+
+        try {
+            const deleteQuery = 'DELETE FROM assignation WHERE a_number = ?';
+            await db.query(deleteQuery, [id]);
+
+            res.status(200).json({ message: 'Assignation deleted successfully' });
+        } catch (error) {
+            console.error('Error deleting assignation:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    async updateAssignation(req, res) {
+        try {
+            const a_ID = req.params.id; // รับ a_ID จาก URL
+            const fields = req.body;
+    
+            // ตรวจสอบและลบฟิลด์ที่ไม่ตรงกับฐานข้อมูล
+            const allowedFields = ['a_number', 'docName', 'eventName', 'detail', 'eventDateStart', 'eventDateEnd'];
+            const keys = Object.keys(fields).filter((key) => allowedFields.includes(key));
+    
+            if (keys.length === 0) {
+                return res.status(400).json({ error: 'No valid fields provided for update' });
+            }
+    
+            const setClause = keys.map((key) => `${key} = ?`).join(', ');
+            const values = keys.map((key) => fields[key]);
+    
+            values.push(a_ID); // เพิ่ม a_ID เป็นค่าพารามิเตอร์สุดท้าย
+    
+            const query = `UPDATE assignation SET ${setClause} WHERE a_ID = ?`;
+            await db.query(query, values);
+    
+            res.status(200).json({ message: 'Assignation updated successfully' });
+        } catch (error) {
+            console.error('Error updating assignation:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
     }
+
 }
 
 module.exports = AssignationController;

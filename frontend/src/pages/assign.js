@@ -74,7 +74,7 @@ function Assign() {
                 eventName,
                 eventDateStart,
                 eventDateEnd,
-                number,
+                a_number: number,
                 docName,
                 detail,
                 selectedTeachers,
@@ -88,6 +88,19 @@ function Assign() {
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // ป้องกันการรีเฟรชหน้า
+
+        // ตรวจสอบกรณีวันที่เริ่มต้นอยู่หลังวันที่สิ้นสุด
+        if (new Date(eventDateStart) > new Date(eventDateEnd)) {
+            alert('วันที่เริ่มต้นต้องไม่อยู่หลังวันที่สิ้นสุด');
+            return; // ยกเลิกการทำงานหากเงื่อนไขไม่ถูกต้อง
+        }
+
+        // ตรวจสอบกรณีไม่ได้เลือกอาจารย์หรือเจ้าหน้าที่
+        if (selectedTeachers.length === 0 && selectedStaff.length === 0) {
+            alert('กรุณาเลือกอาจารย์หรือเจ้าหน้าที่อย่างน้อย 1 คน');
+            return; // ยกเลิกการทำงานหากไม่มีการเลือก
+        }
+
         try {
             await createAssignation(); // เรียก API เพื่อสร้างข้อมูล
             alert('ข้อมูลถูกส่งเรียบร้อยแล้ว!');
