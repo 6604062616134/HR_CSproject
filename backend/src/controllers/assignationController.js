@@ -24,6 +24,7 @@ const AssignationController = {
                 eventName,
                 selectedTeachers = [],
                 selectedStaff = [],
+                link
             } = req.body;
 
             let teacherIds = [];
@@ -44,7 +45,7 @@ const AssignationController = {
             }
 
             // Insert into assignation table พร้อมเก็บ t_ID และ s_ID ในรูปแบบ JSON
-            const insertAssignationQuery = `INSERT INTO assignation (a_number, createdDate, modifiedDate, detail, docName, eventDateStart, eventDateEnd, eventName, t_ID, s_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            const insertAssignationQuery = `INSERT INTO assignation (a_number, createdDate, modifiedDate, detail, docName, eventDateStart, eventDateEnd, eventName, t_ID, s_ID, linkFile) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
             const assignationValues = [
                 a_number,
                 createdDate,
@@ -56,6 +57,7 @@ const AssignationController = {
                 eventName,
                 JSON.stringify(teacherIds), // แปลง t_ID เป็น JSON ก่อนเก็บในฐานข้อมูล
                 JSON.stringify(staffIds),  // แปลง s_ID เป็น JSON ก่อนเก็บในฐานข้อมูล
+                link
             ];
             await db.query(insertAssignationQuery, assignationValues);
 

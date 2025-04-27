@@ -15,6 +15,7 @@ function Assign() {
     const [selectedStaff, setSelectedStaff] = useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDropdownStaffOpen, setIsDropdownStaffOpen] = useState(false);
+    const [link, setLink] = useState(''); // ลิงก์ Google Drive
 
     useEffect(() => {
         const fetchTeachers = async () => {
@@ -79,12 +80,13 @@ function Assign() {
                 detail,
                 selectedTeachers,
                 selectedStaff,
+                link
             });
             console.log('Assignation created:', response.data);
         } catch (error) {
             console.error('Error fetching teachers:', error);
         }
-    }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // ป้องกันการรีเฟรชหน้า
@@ -139,6 +141,7 @@ function Assign() {
         setNumber('');
         setDocName('');
         setDetail('');
+        setLink('');
     };
 
     const handleResetSelections = () => {
@@ -158,7 +161,7 @@ function Assign() {
                             <button
                                 type="button"
                                 onClick={handleReset}
-                                className="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-gray-600 transition-all duration-300 ease-in-out shadow-md text-xs"
+                                className="px-2 py-1 bg-red-500 text-white rounded-3xl hover:bg-gray-600 transition-all duration-300 ease-in-out shadow-md text-xs"
                             >
                                 รีเซ็ต
                             </button>
@@ -169,7 +172,7 @@ function Assign() {
                                 type="text"
                                 value={eventName}
                                 onChange={(e) => setEventName(e.target.value)}
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-gray-300"
                                 placeholder="ชื่อกิจกรรม"
                                 required
                             />
@@ -182,7 +185,7 @@ function Assign() {
                                     type="date"
                                     value={eventDateStart}
                                     onChange={(e) => setEventDateStart(e.target.value)}
-                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                    className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-gray-300"
                                     required
                                 />
                             </div>
@@ -192,7 +195,7 @@ function Assign() {
                                     type="date"
                                     value={eventDateEnd}
                                     onChange={(e) => setEventDateEnd(e.target.value)}
-                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                    className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-gray-300"
                                     required
                                 />
                             </div>
@@ -204,7 +207,7 @@ function Assign() {
                                 type="text"
                                 value={number}
                                 onChange={(e) => setNumber(e.target.value)}
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-gray-300"
                                 placeholder="เลขคำสั่ง"
                             />
                         </div>
@@ -215,7 +218,7 @@ function Assign() {
                                 type="text"
                                 value={docName}
                                 onChange={(e) => setDocName(e.target.value)}
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-gray-300"
                                 placeholder="ชื่อเอกสาร"
                                 required
                             />
@@ -225,7 +228,7 @@ function Assign() {
                             <textarea
                                 value={detail}
                                 onChange={(e) => setDetail(e.target.value)}
-                                className="w-full px-4 py-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 h-40 resize-none"
+                                className="w-full px-4 py-4 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-gray-300 h-40 resize-none"
                                 placeholder="รายละเอียดงาน"
                                 required
                             />
@@ -233,12 +236,12 @@ function Assign() {
                     </div>
 
                     <div className='flex flex-col w-1/2 gap-4 mb-2'>
-                        <div className="flex-1 p-4 rounded-lg border relative h-[455px] overflow-visible">
+                        <div className="flex-1 p-4 rounded-3xl border relative h-[455px] overflow-visible">
                             <div className="flex items-center mb-4 gap-4">
                                 <h3 className="font-medium text-gray-800">อาจารย์ที่เลือก</h3>
                                 <div className="relative">
                                     <div
-                                        className="px-2 py-1 border rounded-md bg-white cursor-pointer focus:outline-none shadow-md z-50 text-xs hover:bg-gray-100 hover:text-blue-600 transition-all duration-300 ease-in-out flex items-center justify-between"
+                                        className="px-2 py-1 border rounded-3xl bg-white cursor-pointer focus:outline-none shadow-lg z-50 text-xs hover:bg-gray-100 hover:text-blue-600 transition-all duration-300 ease-in-out flex items-center justify-between"
                                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                     >
                                         เลือกอาจารย์
@@ -248,7 +251,7 @@ function Assign() {
                                     </div>
                                     {isDropdownOpen && (
                                         <div
-                                            className="absolute z-[9999] mt-2 w-64 max-h-64 overflow-y-auto bg-white border rounded-lg shadow-lg"
+                                            className="absolute z-[9999] mt-2 w-64 max-h-64 overflow-y-auto bg-white border rounded-3xl shadow-lg"
                                             style={{ top: '100%' }}
                                         >
                                             {teachers.map((teacher) => (
@@ -271,7 +274,7 @@ function Assign() {
 
                                 <div className="relative">
                                     <div
-                                        className="px-2 py-1 border rounded-md bg-white cursor-pointer focus:outline-none shadow-md z-50 text-xs hover:bg-gray-100 hover:text-blue-600 transition-all duration-300 ease-in-out flex items-center justify-between"
+                                        className="px-2 py-1 border rounded-3xl bg-white cursor-pointer focus:outline-none shadow-md z-50 text-xs hover:bg-gray-100 hover:text-blue-600 transition-all duration-300 ease-in-out flex items-center justify-between"
                                         onClick={() => setIsDropdownStaffOpen(!isDropdownStaffOpen)}
                                     >
                                         เลือกเจ้าหน้าที่
@@ -281,7 +284,7 @@ function Assign() {
                                     </div>
                                     {isDropdownStaffOpen && (
                                         <div
-                                            className="absolute z-[9999] mt-2 w-64 max-h-64 overflow-y-auto bg-white border rounded-lg shadow-lg"
+                                            className="absolute z-[9999] mt-2 w-64 max-h-64 overflow-y-auto bg-white border rounded-3xl shadow-lg"
                                             style={{ top: '100%' }}
                                         >
                                             {staff.map((staffMember) => (
@@ -305,7 +308,7 @@ function Assign() {
                                 <button
                                     type="button"
                                     onClick={handleResetSelections}
-                                    className="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-gray-600 transition-all shadow-md text-xs"
+                                    className="px-2 py-1 bg-red-500 text-white rounded-3xl hover:bg-gray-600 transition-all shadow-lg text-xs"
                                 >
                                     รีเซ็ตรายการที่เลือก
                                 </button>
@@ -340,9 +343,18 @@ function Assign() {
                                 )}
                             </div>
                         </div>
+                        <div>
+                            <label className="block mb-1 text-sm text-gray-600">แนบลิงก์google drive</label>
+                            <textarea
+                                value={link}
+                                onChange={(e) => setLink(e.target.value)}
+                                className="w-full px-4 py-4 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-gray-300 h-24 resize-none" // ลดความสูงจาก h-40 เป็น h-32
+                                placeholder="ลิงก์google drive"
+                            />
+                        </div>
                         <button
                             type="submit"
-                            className="w-full bg-[#000066] hover:bg-gray-700 text-white py-2 rounded-lg transition-all duration-300 ease-in-out shadow-lg"
+                            className="w-full bg-[#000066] hover:bg-green-600 text-white py-2 hover:scale-105 rounded-3xl shadow-xl transition-all duration-300 ease-in-out"
                         >
                             ยืนยัน
                         </button>

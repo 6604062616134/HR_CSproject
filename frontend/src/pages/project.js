@@ -53,22 +53,22 @@ function Project() {
             <div className="flex flex-col p-4 mt-16 print:mt-0 flex-grow w-full">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">รายชื่อนักศึกษาที่เข้าสอบโปรเจค</h2>
                 <div className="overflow-x-auto flex-grow w-full">
-                    <table className="w-full bg-white border border-gray-300 rounded-lg print-cell">
+                    <table className="w-full bg-white border border-gray-300 rounded-3xl print-cell">
                         <thead>
                             <tr className="bg-gray-200 text-gray-700">
                                 <th className="px-4 py-2 border text-xs col-index">ลำดับ</th>
                                 <th className="px-4 py-2 border text-xs col-date">วันที่สอบ</th>
-                                <th className="px-4 py-2 border text-xs col-thesis">หัวข้อ</th>
+                                <th className="px-4 py-2 border text-xs col-nameHeader">หัวข้อ</th>
                                 <th className="px-4 py-2 border text-xs col-id">รหัส</th>
                                 <th className="px-4 py-2 border text-xs col-name">ชื่อ-นามสกุล</th>
-                                <th className="px-4 py-2 border text-xs col-chairman">ประธานกรรมการ</th>
-                                <th className="px-4 py-2 border text-xs col-director">กรรมการ</th>
-                                <th className="px-4 py-2 border text-xs col-main-mentor">อาจารย์ที่ปรึกษาหลัก</th>
-                                <th className="px-4 py-2 border text-xs col-co-mentor">อาจารย์ที่ปรึกษาร่วม</th>
-                                <th className="px-4 py-2 border text-xs col-year">ปีการศึกษา</th>
-                                <th className="px-4 py-2 border text-xs col-room">ห้องสอบ</th>
-                                <th className="px-4 py-2 border text-xs col-grade">เกรดที่ได้</th>
-                                <th className="px-4 py-2 border text-xs col-note">หมายเหตุ</th>
+                                <th className="px-4 py-2 border text-xs col-chairman rotate">ประธานกรรมการ</th>
+                                <th className="px-4 py-2 border text-xs col-director rotate">กรรมการ</th>
+                                <th className="px-4 py-2 border text-xs col-main-mentor rotate">อาจารย์ที่ปรึกษาหลัก</th>
+                                <th className="px-4 py-2 border text-xs col-co-mentor rotate">อาจารย์ที่ปรึกษาร่วม</th>
+                                <th className="px-4 py-2 border text-xs col-year rotate">ปีการศึกษา</th>
+                                <th className="px-4 py-2 border text-xs col-room rotate">ห้องสอบ</th>
+                                <th className="px-4 py-2 border text-xs col-grade rotate">เกรดที่ได้</th>
+                                <th className="px-4 py-2 border text-xs col-note rotate">หมายเหตุ</th>
                                 <th className="px-4 py-2 border text-xs print:hidden col-edit">แก้ไข</th>
                             </tr>
                         </thead>
@@ -114,7 +114,7 @@ function Project() {
                                     <td className="px-2 py-2 border text-xs text-center col-note">{student.note}</td>
                                     <td className="px-2 py-2 border text-xs text-center print:hidden col-edit">
                                         <button
-                                            className="px-2 py-1 bg-[#000066] text-white rounded hover:bg-gray-600 shadow-lg"
+                                            className="px-2 py-1 bg-[#000066] text-white rounded-3xl z-50 hover:scale-105 hover:bg-white hover:text-black shadow-lg transition-transform duration-300"
                                             onClick={() => handleEditModalOpen(student)}
                                         >
                                             แก้ไข
@@ -126,12 +126,12 @@ function Project() {
                     </table>
                     {isEditModalOpen && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                            <div className="bg-white p-6 rounded-lg shadow-lg w-[800px]">
+                            <div className="bg-white p-6 rounded-3xl shadow-lg w-[800px]">
                                 <div className="flex justify-between items-center mb-4">
                                     <h2 className="text-lg font-bold">แก้ไขข้อมูลนักศึกษา</h2>
                                     <button
                                         type="button"
-                                        className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 no-print"
+                                        className="px-3 py-1 bg-red-500 text-white text-sm rounded-3xl hover:bg-red-600 no-print transition-transform duration-300 hover:scale-105"
                                         onClick={handleDeleteStudent}
                                     >
                                         ลบข้อมูลทั้งหมด
@@ -159,7 +159,7 @@ function Project() {
                                                 name="datetime"
                                                 value={editData?.datetime || ''}
                                                 onChange={(e) => setEditData({ ...editData, datetime: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex-[2] min-w-[300px]">
@@ -169,7 +169,7 @@ function Project() {
                                                 name="thesisnameTH"
                                                 value={editData?.thesisnameTH || ''}
                                                 onChange={(e) => setEditData({ ...editData, thesisnameTH: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex-[2] min-w-[300px]">
@@ -179,7 +179,7 @@ function Project() {
                                                 name="thesisnameEN"
                                                 value={editData?.thesisnameEN || ''}
                                                 onChange={(e) => setEditData({ ...editData, thesisnameEN: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex-1 min-w-[150px]">
@@ -189,7 +189,7 @@ function Project() {
                                                 name="studentCode1"
                                                 value={editData?.studentCode1 || ''}
                                                 onChange={(e) => setEditData({ ...editData, studentCode1: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex-1 min-w-[150px]">
@@ -199,7 +199,7 @@ function Project() {
                                                 name="studentCode2"
                                                 value={editData?.studentCode2 || ''}
                                                 onChange={(e) => setEditData({ ...editData, studentCode2: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex-[2] min-w-[300px]">
@@ -209,7 +209,7 @@ function Project() {
                                                 name="FLname1"
                                                 value={editData?.FLname1 || ''}
                                                 onChange={(e) => setEditData({ ...editData, FLname1: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex-[2] min-w-[300px]">
@@ -219,7 +219,7 @@ function Project() {
                                                 name="FLname2"
                                                 value={editData?.FLname2 || ''}
                                                 onChange={(e) => setEditData({ ...editData, FLname2: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex-1 min-w-[150px]">
@@ -229,7 +229,7 @@ function Project() {
                                                 name="chairman"
                                                 value={editData?.chairman || ''}
                                                 onChange={(e) => setEditData({ ...editData, chairman: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex-1 min-w-[150px]">
@@ -239,7 +239,7 @@ function Project() {
                                                 name="director"
                                                 value={editData?.director || ''}
                                                 onChange={(e) => setEditData({ ...editData, director: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex-1 min-w-[150px]">
@@ -249,7 +249,7 @@ function Project() {
                                                 name="MainMentor"
                                                 value={editData?.MainMentor || ''}
                                                 onChange={(e) => setEditData({ ...editData, MainMentor: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex-1 min-w-[150px]">
@@ -259,7 +259,7 @@ function Project() {
                                                 name="CoMentor"
                                                 value={editData?.CoMentor || ''}
                                                 onChange={(e) => setEditData({ ...editData, CoMentor: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex-1 min-w-[150px]">
@@ -269,7 +269,7 @@ function Project() {
                                                 name="year"
                                                 value={editData?.year || ''}
                                                 onChange={(e) => setEditData({ ...editData, year: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex-1 min-w-[150px]">
@@ -279,7 +279,7 @@ function Project() {
                                                 name="room"
                                                 value={editData?.room || ''}
                                                 onChange={(e) => setEditData({ ...editData, room: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex-1 min-w-[150px]">
@@ -289,7 +289,7 @@ function Project() {
                                                 name="grade"
                                                 value={editData?.grade || ''}
                                                 onChange={(e) => setEditData({ ...editData, grade: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex-[2] min-w-[300px]">
@@ -298,21 +298,21 @@ function Project() {
                                                 name="note"
                                                 value={editData?.note || ''}
                                                 onChange={(e) => setEditData({ ...editData, note: e.target.value })}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                     </div>
                                     <div className="flex justify-end gap-4 mt-6">
                                         <button
                                             type="button"
-                                            className="px-4 py-2 bg-gray-300 rounded-lg shadow-lg hover:bg-gray-400"
+                                            className="px-4 py-2 bg-gray-300 rounded-3xl shadow-lg hover:bg-red-600 hover:scale-105 hover:text-white transition-transform duration-300"
                                             onClick={handleEditModalClose}
                                         >
                                             ยกเลิก
                                         </button>
                                         <button
                                             type="submit"
-                                            className="px-4 py-2 bg-[#000066] text-white shadow-lg rounded-lg hover:bg-gray-600"
+                                            className="px-4 py-2 bg-[#000066] text-white shadow-lg rounded-3xl hover:bg-green-600 hover:scale-105 transition-transform duration-300"
                                         >
                                             บันทึก
                                         </button>

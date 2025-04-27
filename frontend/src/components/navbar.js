@@ -96,22 +96,28 @@ function Navbar({ className = "" }) {
                     <h2 className="text-lg font-bold mb-4">เมนู</h2>
                     <NavLink
                         to="/"
-                        className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
+                        className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded-3xl"
                         onClick={handleToggle}
                     >
                         มอบหมายงาน
                     </NavLink>
                     <NavLink
                         to="/project"
-                        className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
+                        className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded-3xl"
                         onClick={handleToggle}
                     >
                         สอบโปรเจค
                     </NavLink>
+                    <NavLink
+                        to="/staffProject"
+                        className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded-3xl"
+                        onClick={handleToggle}>
+                        ตรวจโปรเจค(เจ้าหน้าที่)
+                    </NavLink>
                     <hr className="my-4 border-t border-1 border-gray-300 w-64 mx-auto" />
                     <button
                         onClick={handleTeacherToggle}
-                        className="w-full flex justify-between items-center px-4 py-2 text-white font-bold hover:bg-white hover:text-black rounded"
+                        className="w-full flex justify-between items-center px-4 py-2 text-white font-bold hover:bg-white hover:text-black rounded-3xl"
                     >
                         อาจารย์
                         <span className={`transform transition-transform ${isTeacherListOpen ? 'rotate-180' : ''}`}>
@@ -122,21 +128,20 @@ function Navbar({ className = "" }) {
                     {isTeacherListOpen && (
                         <div className="ml-4 mt-2 max-h-64 overflow-y-auto scrollbar-custom">
                             {teachers.map((teacher) => (
-                                <button
+                                <NavLink
                                     key={teacher.t_ID}
-                                    onClick={() => {
-                                        window.location.href = `/detail/teacher/${teacher.t_ID}`;
-                                    }}
-                                    className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
+                                    to={`/detail/teacher/${teacher.t_ID}`} // ส่ง type "teacher" และ id
+                                    className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded-3xl"
+                                    onClick={handleToggle}
                                 >
                                     {teacher.t_name}
-                                </button>
+                                </NavLink>
                             ))}
                         </div>
                     )}
                     <button
                         onClick={handleStaffToggle}
-                        className="w-full flex justify-between items-center px-4 py-2 text-white font-bold hover:bg-white hover:text-black rounded transition-all duration-300"
+                        className="w-full flex justify-between items-center px-4 py-2 text-white font-bold hover:bg-white hover:text-black rounded-3xl"
                     >
                         เจ้าหน้าที่
                         <span className={`transform transition-transform ${isStaffListOpen ? 'rotate-180' : ''}`}>
@@ -145,17 +150,16 @@ function Navbar({ className = "" }) {
                     </button>
                     {/* รายชื่อเจ้าหน้าที่ */}
                     {isStaffListOpen && (
-                        <div className="ml-4 mt-2 mb-4 max-h-64 overflow-y-auto scrollbar-custom">
+                        <div className="ml-4 mt-2 max-h-64 overflow-y-auto scrollbar-custom">
                             {staff.map((staffMember) => (
-                                <button
+                                <NavLink
                                     key={staffMember.s_ID}
-                                    onClick={() => {
-                                        window.location.href = `/detail/staff/${staffMember.s_ID}`;
-                                    }}
-                                    className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded"
+                                    to={`/detail/staff/${staffMember.s_ID}`} // ส่ง type "staff" และ id
+                                    className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded-3xl"
+                                    onClick={handleToggle}
                                 >
                                     {staffMember.s_name}
-                                </button>
+                                </NavLink>
                             ))}
                         </div>
                     )}
