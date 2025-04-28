@@ -6,6 +6,9 @@ function Project() {
     const [students, setStudents] = useState([]);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editData, setEditData] = useState(null);
+    const [searchTerm, setSearchTerm] = useState(''); // สำหรับช่องค้นหา
+    const [searchTermYear, setSearchTermYear] = useState(''); // สำหรับดรอปดาวน์เลือกเทอม
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false); // สำหรับเปิด/ปิดดรอปดาวน์
 
     const fetchData = async () => {
         try {
@@ -19,6 +22,26 @@ function Project() {
     useEffect(() => {
         fetchData();
     }, []);
+
+    const filteredStudents = students.filter((student) => {
+        const search = searchTerm.toLowerCase();
+        const yearMatch = searchTermYear ? student.year === searchTermYear : true; // กรองตามปีการศึกษา
+        return (
+            yearMatch &&
+            (
+                student.thesisnameTH?.toLowerCase().includes(search) ||
+                student.thesisnameEN?.toLowerCase().includes(search) ||
+                student.FLname1?.toLowerCase().includes(search) ||
+                student.FLname2?.toLowerCase().includes(search) ||
+                student.studentCode1?.toLowerCase().includes(search) ||
+                student.studentCode2?.toLowerCase().includes(search) ||
+                student.chairman?.toLowerCase().includes(search) || // ค้นหาจากประธานกรรมการ
+                student.director?.toLowerCase().includes(search) || // ค้นหาจากกรรมการ
+                student.MainMentor?.toLowerCase().includes(search) || // ค้นหาจากอาจารย์ที่ปรึกษาหลัก
+                student.CoMentor?.toLowerCase().includes(search) // ค้นหาจากอาจารย์ที่ปรึกษาร่วม
+            )
+        );
+    });
 
     const handleEditModalOpen = (student) => {
         setEditData(student); // ตั้งค่าข้อมูลที่ต้องการแก้ไข
@@ -51,7 +74,59 @@ function Project() {
         <div className="flex flex-col h-screen bg-gray-100">
             <NavbarProject fetchData={fetchData} className="print:hidden" />
             <div className="flex flex-col p-4 mt-16 print:mt-0 flex-grow w-full">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">รายชื่อนักศึกษาที่เข้าสอบโปรเจค</h2>
+                <div className="flex flex-row gap-4 mb-4">
+                    <h2 className="text-xl font-semibold text-gray-800">รายชื่อนักศึกษาที่เข้าสอบโปรเจค</h2>
+                    <div className="flex items-center gap-4">
+                        <input
+                            type="text"
+                            placeholder="ค้นหา..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="flex-grow px-4 py-2 border rounded-3xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <div className="relative">
+                            <div
+                                className="px-4 py-2 border rounded-3xl bg-white cursor-pointer focus:outline-none z-50 text-xs hover:bg-gray-100 hover:text-blue-600 transition-all duration-300 ease-in-out flex items-center justify-between"
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            >
+                                {searchTermYear || 'เลือกเทอม'}
+                                <span className={`ml-2 transform transition-transform duration-300 ease-in-out ${isDropdownOpen ? 'rotate-180' : ''}`}>
+                                    ▼
+                                </span>
+                            </div>
+                            {isDropdownOpen && (
+                                <div
+                                    className="absolute z-[9999] mt-2 w-64 max-h-64 overflow-y-auto bg-white border rounded-3xl"
+                                    style={{ top: '100%' }}
+                                >
+                                    {/* ตัวเลือกค่าว่าง */}
+                                    <div
+                                        className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-700"
+                                        onClick={() => {
+                                            setSearchTermYear(''); // ตั้งค่าเป็นค่าว่าง
+                                            setIsDropdownOpen(false);
+                                        }}
+                                    >
+                                        -
+                                    </div>
+                                    {/* ตัวเลือกเทอม */}
+                                    {['1/2566', '2/2566', '1/2567', '2/2567', '1/2568', '2/2568', '1/2569', '2/2569', '1/2570', '2/2570'].map((term) => (
+                                        <div
+                                            key={term}
+                                            className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-700"
+                                            onClick={() => {
+                                                setSearchTermYear(term);
+                                                setIsDropdownOpen(false);
+                                            }}
+                                        >
+                                            {term}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
                 <div className="overflow-x-auto flex-grow w-full">
                     <table className="w-full bg-white border border-gray-300 rounded-3xl print-cell">
                         <thead>
@@ -73,55 +148,63 @@ function Project() {
                             </tr>
                         </thead>
                         <tbody>
-                            {students.map((student, index) => (
-                                <tr key={student.id}>
-                                    <td className="px-4 py-2 border text-xs text-center col-index">{index + 1}</td>
-                                    <td className="px-4 py-2 border text-xs text-center col-date">
-                                        {new Date(student.datetime).toLocaleDateString('th-TH', {
-                                            day: 'numeric',
-                                            month: 'numeric',
-                                            year: 'numeric',
-                                        })}
-                                    </td>
-                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal col-thesis">
-                                        {student.thesisnameTH || student.thesisnameEN ? (
-                                            <>
-                                                {student.thesisnameTH && <span>{student.thesisnameTH}</span>}
-                                                {student.thesisnameEN && student.thesisnameTH && <br />}
-                                                {student.thesisnameEN && <span>{student.thesisnameEN}</span>}
-                                            </>
-                                        ) : (
-                                            <span>ไม่มีข้อมูล</span>
-                                        )}
-                                    </td>
-                                    <td className="px-2 py-2 border text-xs break-words whitespace-normal col-id">
-                                        {student.studentCode1}
-                                        <br />
-                                        {student.studentCode2}
-                                    </td>
-                                    <td className="px-2 py-2 border text-xs break-words whitespace-normal col-name">
-                                        {student.FLname1}
-                                        <br />
-                                        {student.FLname2}
-                                    </td>
-                                    <td className="px-2 py-2 border text-xs text-center col-chairman">{student.chairman}</td>
-                                    <td className="px-2 py-2 border text-xs text-center col-director">{student.director}</td>
-                                    <td className="px-2 py-2 border text-xs text-center col-main-mentor">{student.MainMentor}</td>
-                                    <td className="px-2 py-2 border text-xs text-center col-co-mentor">{student.CoMentor}</td>
-                                    <td className="px-2 py-2 border text-xs text-center col-year">{student.year}</td>
-                                    <td className="px-2 py-2 border text-xs text-center col-room">{student.room}</td>
-                                    <td className="px-2 py-2 border text-xs text-center col-grade">{student.grade}</td>
-                                    <td className="px-2 py-2 border text-xs text-center col-note">{student.note}</td>
-                                    <td className="px-2 py-2 border text-xs text-center print:hidden col-edit">
-                                        <button
-                                            className="px-2 py-1 bg-[#000066] text-white rounded-3xl z-50 hover:scale-105 hover:bg-white hover:text-black shadow-lg transition-transform duration-300"
-                                            onClick={() => handleEditModalOpen(student)}
-                                        >
-                                            แก้ไข
-                                        </button>
+                            {filteredStudents.length > 0 ? (
+                                filteredStudents.map((student, index) => (
+                                    <tr key={student.id}>
+                                        <td className="px-4 py-2 border text-xs text-center col-index">{index + 1}</td>
+                                        <td className="px-4 py-2 border text-xs text-center col-date">
+                                            {new Date(student.datetime).toLocaleDateString('th-TH', {
+                                                day: 'numeric',
+                                                month: 'numeric',
+                                                year: 'numeric',
+                                            })}
+                                        </td>
+                                        <td className="px-4 py-2 border text-xs break-words whitespace-normal col-thesis">
+                                            {student.thesisnameTH || student.thesisnameEN ? (
+                                                <>
+                                                    {student.thesisnameTH && <span>{student.thesisnameTH}</span>}
+                                                    {student.thesisnameEN && student.thesisnameTH && <br />}
+                                                    {student.thesisnameEN && <span>{student.thesisnameEN}</span>}
+                                                </>
+                                            ) : (
+                                                <span>ไม่มีข้อมูล</span>
+                                            )}
+                                        </td>
+                                        <td className="px-2 py-2 border text-xs break-words whitespace-normal col-id">
+                                            {student.studentCode1}
+                                            <br />
+                                            {student.studentCode2}
+                                        </td>
+                                        <td className="px-2 py-2 border text-xs break-words whitespace-normal col-name">
+                                            {student.FLname1}
+                                            <br />
+                                            {student.FLname2}
+                                        </td>
+                                        <td className="px-2 py-2 border text-xs text-center col-chairman">{student.chairman}</td>
+                                        <td className="px-2 py-2 border text-xs text-center col-director">{student.director}</td>
+                                        <td className="px-2 py-2 border text-xs text-center col-main-mentor">{student.MainMentor}</td>
+                                        <td className="px-2 py-2 border text-xs text-center col-co-mentor">{student.CoMentor}</td>
+                                        <td className="px-2 py-2 border text-xs text-center col-year">{student.year}</td>
+                                        <td className="px-2 py-2 border text-xs text-center col-room">{student.room}</td>
+                                        <td className="px-2 py-2 border text-xs text-center col-grade">{student.grade}</td>
+                                        <td className="px-2 py-2 border text-xs text-center col-note">{student.note}</td>
+                                        <td className="px-2 py-2 border text-xs text-center print:hidden col-edit">
+                                            <button
+                                                className="px-2 py-1 bg-[#000066] text-white rounded-3xl z-50 hover:scale-105 hover:bg-white hover:text-black shadow-lg transition-transform duration-300"
+                                                onClick={() => handleEditModalOpen(student)}
+                                            >
+                                                แก้ไข
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="14" className="px-4 py-2 text-center text-xs text-gray-500">
+                                        ไม่พบข้อมูล
                                     </td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                     {isEditModalOpen && (

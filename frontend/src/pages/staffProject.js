@@ -66,86 +66,100 @@ function StaffProject() {
             <NavbarStaffProject className="print:hidden" />
             <div className="flex items-center gap-4 mb-4">
                 <h1 className="text-xl font-bold">ตารางการตรวจโปรเจคสำหรับเจ้าหน้าที่</h1>
-                <div className="relative">
-                    <div
-                        className="px-4 py-2 border rounded-3xl bg-white cursor-pointer focus:outline-none shadow-md z-50 text-sm hover:bg-gray-100 hover:text-blue-600 transition-all duration-300 ease-in-out flex items-center justify-between"
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    >
-                        {searchTermYear || 'เลือกเทอม'}
-                        <span className={`ml-2 transform transition-transform duration-300 ease-in-out ${isDropdownOpen ? 'rotate-180' : ''}`}>
-                            ▼
-                        </span>
+                <div className="flex items-center gap-4">
+                    <div className="relative flex-grow">
+                        <input
+                            type="text"
+                            placeholder="ค้นหา..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full px-4 py-2 border text-xs rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
                     </div>
-                    {isDropdownOpen && (
+                    <div className="relative">
                         <div
-                            className="absolute z-[9999] mt-2 w-64 max-h-64 overflow-y-auto bg-white border rounded-3xl shadow-lg"
-                            style={{ top: '100%' }}
+                            className="px-4 py-2 border rounded-3xl bg-white cursor-pointer focus:outline-none z-50 text-xs hover:bg-gray-100 hover:text-blue-600 transition-all duration-300 ease-in-out flex items-center justify-between"
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         >
-                            {/* ตัวเลือกค่าว่าง */}
+                            {searchTermYear || 'เลือกเทอม'}
+                            <span className={`ml-2 transform transition-transform duration-300 ease-in-out ${isDropdownOpen ? 'rotate-180' : ''}`}>
+                                ▼
+                            </span>
+                        </div>
+                        {isDropdownOpen && (
                             <div
-                                className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-700"
-                                onClick={() => {
-                                    setSearchTermYear(''); // ตั้งค่าเป็นค่าว่าง
-                                    setIsDropdownOpen(false);
-                                }}
+                                className="absolute z-[9999] mt-2 text-xs w-64 max-h-64 overflow-y-auto bg-white border rounded-3xl shadow-lg"
+                                style={{ top: '100%' }}
                             >
-                                -
-                            </div>
-                            {/* ตัวเลือกเทอม */}
-                            {['1/2566', '2/2566', '1/2567', '2/2567', '1/2568', '2/2568', '1/2569', '2/2569', '1/2570', '2/2570'].map((term) => (
+                                {/* ตัวเลือกค่าว่าง */}
                                 <div
-                                    key={term}
                                     className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-700"
                                     onClick={() => {
-                                        setSearchTermYear(term);
+                                        setSearchTermYear(''); // ตั้งค่าเป็นค่าว่าง
                                         setIsDropdownOpen(false);
                                     }}
                                 >
-                                    {term}
+                                    -
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                                {/* ตัวเลือกเทอม */}
+                                {['1/2566', '2/2566', '1/2567', '2/2567', '1/2568', '2/2568', '1/2569', '2/2569', '1/2570', '2/2570'].map((term) => (
+                                    <div
+                                        key={term}
+                                        className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-700"
+                                        onClick={() => {
+                                            setSearchTermYear(term);
+                                            setIsDropdownOpen(false);
+                                        }}
+                                    >
+                                        {term}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <input
-                    type="text"
-                    placeholder="ค้นหา..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-1/3 px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
             </div>
             {/* ตารางแสดงข้อมูล */}
-            <div className="overflow-x-auto">
-                <table className="table-auto w-full border-collapse border border-gray-300">
+            <div className="overflow-x-auto flex-grow w-full">
+                <table className="w-full bg-white border border-gray-300 rounded-3xl print-cell">
                     <thead>
-                        <tr className="bg-gray-100">
-                            <th className="border border-gray-300 px-4 py-2 break-words whitespace-normal">ชื่อโปรเจค</th>
-                            <th className="border border-gray-300 px-4 py-2 break-words whitespace-normal">ชื่อนักศึกษา</th>
-                            <th className="border border-gray-300 px-4 py-2 break-words whitespace-normal">รหัสนักศึกษา</th>
-                            <th className="border border-gray-300 px-4 py-2 break-words whitespace-normal">ปีการศึกษา</th>
-                            <th className="border border-gray-300 px-4 py-2 break-words whitespace-normal">อาจารย์</th>
-                            <th className="border border-gray-300 px-4 py-2 break-words whitespace-normal">เจ้าหน้าที่</th>
-                            <th className="border border-gray-300 px-4 py-2 break-words whitespace-normal">ตรวจ</th>
-                            <th className="border border-gray-300 px-4 py-2 break-words whitespace-normal">หมายเหตุ</th>
-                            <th className="border border-gray-300 px-4 py-2 break-words whitespace-normal print:hidden">แก้ไข</th>
+                        <tr className="bg-gray-200 text-gray-700">
+                            <th className="px-4 py-2 border text-xs">ชื่อโปรเจค</th>
+                            <th className="px-4 py-2 border text-xs">ชื่อนักศึกษา</th>
+                            <th className="px-4 py-2 border text-xs">รหัสนักศึกษา</th>
+                            <th className="px-4 py-2 border text-xs">ปีการศึกษา</th>
+                            <th className="px-4 py-2 border text-xs">อาจารย์</th>
+                            <th className="px-4 py-2 border text-xs">เจ้าหน้าที่</th>
+                            <th className="px-4 py-2 border text-xs">ตรวจ</th>
+                            <th className="px-4 py-2 border text-xs">หมายเหตุ</th>
+                            <th className="px-4 py-2 border text-xs print:hidden">แก้ไข</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredData.length > 0 ? (
                             filteredData.map((item, index) => (
                                 <tr key={index} className="text-center">
-                                    <td className="border border-gray-300 px-4 py-2 break-words whitespace-normal">{item.thesisNameTH || '-'} <br /> {item.thesisNameEN || '-'}</td>
-                                    <td className="border border-gray-300 px-4 py-2 break-words whitespace-normal">{item.studentName1 || '-'} <br /> {item.studentName2 || '-'}</td>
-                                    <td className="border border-gray-300 px-4 py-2 break-words whitespace-normal">{item.studentID_1 || '-'} <br /> {item.studentID_2 || '-'}</td>
-                                    <td className="border border-gray-300 px-4 py-2 break-words whitespace-normal">{item.year || '-'}</td>
-                                    <td className="border border-gray-300 px-4 py-2 break-words whitespace-normal">{item.teacherName || '-'}</td>
-                                    <td className="border border-gray-300 px-4 py-2 break-words whitespace-normal">{item.staffName || '-'}</td>
-                                    <td className="border border-gray-300 px-4 py-2 break-words whitespace-normal">{item.checked ? 'ตรวจแล้ว' : 'ยังไม่ตรวจ'}</td>
-                                    <td className="border border-gray-300 px-4 py-2 break-words whitespace-normal max-w-[200px]">{item.note || '-'}</td>
-                                    <td className="border border-gray-300 px-4 py-2 print:hidden">
+                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">
+                                        {item.thesisNameTH || '-'} <br /> {item.thesisNameEN || '-'}
+                                    </td>
+                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">
+                                        {item.studentName1 || '-'} <br /> {item.studentName2 || '-'}
+                                    </td>
+                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">
+                                        {item.studentID_1 || '-'} <br /> {item.studentID_2 || '-'}
+                                    </td>
+                                    <td className="px-4 py-2 border text-xs text-center">{item.year || '-'}</td>
+                                    <td className="px-4 py-2 border text-xs text-center">{item.teacherName || '-'}</td>
+                                    <td className="px-4 py-2 border text-xs text-center">{item.staffName || '-'}</td>
+                                    <td className="px-4 py-2 border text-xs text-center">
+                                        {item.checked ? 'ตรวจแล้ว' : 'ยังไม่ตรวจ'}
+                                    </td>
+                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal max-w-[200px]">
+                                        {item.note || '-'}
+                                    </td>
+                                    <td className="px-4 py-2 border text-xs text-center print:hidden">
                                         <button
-                                            className="print:hidden px-2 py-1 bg-[#000066] text-white rounded-3xl hover:scale-105 hover:bg-white hover:text-black shadow-lg transition-transform duration-300 text-xs"
+                                            className="px-2 py-1 bg-[#000066] text-white rounded-3xl z-50 hover:scale-105 hover:bg-white hover:text-black shadow-lg transition-transform duration-300"
                                             onClick={() => handleEditClick(item)}
                                         >
                                             แก้ไข
@@ -155,7 +169,9 @@ function StaffProject() {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="9" className="border border-gray-300 px-4 py-2 text-center">ไม่พบข้อมูล</td>
+                                <td colSpan="9" className="px-4 py-2 border text-center text-xs text-gray-500">
+                                    ไม่พบข้อมูล
+                                </td>
                             </tr>
                         )}
                     </tbody>

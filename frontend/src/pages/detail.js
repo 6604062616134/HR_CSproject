@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/navbar";
-import { re } from "mathjs";
 
 function Detail({ type }) {
     const { id } = useParams();
@@ -17,6 +16,7 @@ function Detail({ type }) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [currentAssignation, setCurrentAssignation] = useState(null);
     const [useTodayAsEndDate, setUseTodayAsEndDate] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
     const [editData, setEditData] = useState({
         a_number: '',
         docName: '',
@@ -63,29 +63,41 @@ function Detail({ type }) {
 
     const filteredAssignations = assignations.filter((assignation) => {
         const eventStart = new Date(assignation.eventDateStart);
-        const filterStart = filterStartDate ? new Date(filterStartDate + 'T00:00:00') : null;
-        // กรณีเลือกเฉพาะวันที่เริ่มต้น
-        if (filterStart && !filterEnd) {
-            return eventStart >= filterStart;
-        }
-        const filterEnd = filterEndDate ? new Date(filterEndDate + 'T23:59:59') : null;
         const eventEnd = new Date(assignation.eventDateEnd);
+        const search = searchTerm.toLowerCase();
 
+        const hasStartDate = !!filterStartDate;
+        const hasEndDate = !!filterEndDate;
 
-        if (!filterStart && !filterEnd) return true;
+        // กรองข้อมูลตามคำค้นหา
+        const matchesSearch = assignation.a_number?.toLowerCase().includes(search) ||
+            assignation.docName?.toLowerCase().includes(search) ||
+            assignation.eventName?.toLowerCase().includes(search) ||
+            assignation.detail?.toLowerCase().includes(search);
 
+        // กรณีที่ไม่ได้กรอกทั้งวันที่เริ่มต้นและวันที่สิ้นสุด
+        if (!hasStartDate && !hasEndDate) return matchesSearch;
 
-        // กรณีเลือกทั้งเริ่มต้นและสิ้นสุด
-        if (filterStart && filterEnd) {
-            return eventStart >= filterStart && eventStart <= filterEnd;
+        // กรณีที่กรอกแค่วันที่เริ่มต้น
+        if (hasStartDate && !hasEndDate) {
+            const filterStart = new Date(filterStartDate + 'T00:00:00');
+            return matchesSearch && eventStart >= filterStart;
         }
 
-        // กรณีเลือกเฉพาะวันที่สิ้นสุด
-        if (!filterStart && filterEnd) {
-            return eventStart <= filterEnd;
+        // กรณีที่กรอกทั้งวันที่เริ่มต้นและวันที่สิ้นสุด
+        if (hasStartDate && hasEndDate) {
+            const filterStart = new Date(filterStartDate + 'T00:00:00');
+            const filterEnd = new Date(filterEndDate + 'T23:59:59');
+            return matchesSearch && eventStart >= filterStart && eventStart <= filterEnd;
         }
 
-        return true;
+        // กรณีที่กรอกแค่วันที่สิ้นสุด
+        if (!hasStartDate && hasEndDate) {
+            const filterEnd = new Date(filterEndDate + 'T23:59:59');
+            return matchesSearch && eventStart <= filterEnd;
+        }
+
+        return matchesSearch;
     });
 
     const toggleSortOrder = (field) => {
@@ -162,7 +174,7 @@ function Detail({ type }) {
     return (
         <div>
             <Navbar className="print:hidden" />
-            <div className="container mt-10 px-12 py-12">
+            <div className="container mt-10 px-12 pt-8 pb-8">
                 <div className="flex flex-row gap-4">
                     {type === 'teacher' ? (
                         <p className="text-lg font-semibold mt-6 text-left">
@@ -171,36 +183,36 @@ function Detail({ type }) {
                     ) : (
                         <p className="text-lg font-semibold text-left">{personDetail.s_name}</p>
                     )}
-                    <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-4 pt-2">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 print:hidden text-left">วันที่เริ่มต้น</label>
+                            <input
+                                type="text"
+                                placeholder="ค้นหา..."
+                                className="w-60 px-4 py-2 mt-3 text-xs border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500 print:hidden"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 print:hidden text-left">วันที่เริ่มต้น</label>
                             <input
                                 type="date"
-                                className="w-40 px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500 print:hidden"
+                                className="w-40 px-4 py-2 text-xs border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500 print:hidden"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 print:hidden text-left">วันที่สิ้นสุด</label>
+                            <label className="block text-xs font-medium text-gray-700 print:hidden text-left">วันที่สิ้นสุด</label>
                             <input
                                 type="date"
-                                className="w-40 px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500 print:hidden"
+                                className="w-40 px-4 py-2 text-xs border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500 print:hidden"
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
                             />
                         </div>
-                        <div className="flex items-center gap-2 mt-6 print:hidden">
-                            <input
-                                type="checkbox"
-                                checked={useTodayAsEndDate}
-                                onChange={() => setUseTodayAsEndDate(!useTodayAsEndDate)}
-                                className="print:hidden"
-                            />
-                            <label className="text-sm text-gray-700 text-left">ถึงวันปัจจุบัน</label>
-                        </div>
                         <button
-                            className="px-4 py-2 bg-[#000066] text-white rounded-3xl shadow-lg hover:bg-gray-600 mt-4 transition-all duration-300 ease-in-out focus:outline-none print:hidden"
+                            className="px-4 py-2 bg-[#000066] text-white text-xs rounded-3xl shadow-lg hover:bg-gray-600 mt-4 transition-all duration-300 ease-in-out focus:outline-none print:hidden"
                             onClick={() => {
                                 if (!startDate) {
                                     alert("กรุณาเลือกวันที่เริ่มต้นก่อนค้นหา");
@@ -224,7 +236,7 @@ function Detail({ type }) {
             </div>
             <div className="activityTable overflow-x-auto">
                 <div className="w-full max-w-full mx-auto pr-12 pl-12">
-                    <h2 className="text-lg font-bold mb-4">ข้อมูลกิจกรรม</h2>
+                    <h2 className="text-lg font-bold">ข้อมูลกิจกรรม</h2>
                     <table className="table-auto w-full border-collapse border border-gray-300 activityTableBorder">
                         <thead>
                             <tr className="bg-gray-100">
@@ -267,7 +279,7 @@ function Detail({ type }) {
                                                 <td className="border border-gray-300 px-4 py-2 text-xs">{assignation.a_number}</td>
                                                 <td className="border border-gray-300 px-4 py-2 text-xs">{assignation.docName}</td>
                                                 <td className="border border-gray-300 px-4 py-2 text-xs">{assignation.eventName}</td>
-                                                <td className="border border-gray-300 px-4 py-2 text-xs">{assignation.detail}</td>
+                                                <td className="border border-gray-300 px-4 py-2 break-words whitespace-normal max-w-[200px] text-left text-xs">{assignation.detail}</td>
                                                 <td className="border border-gray-300 px-4 py-2 text-xs">{formatDate(assignation.eventDateStart)}</td>
                                                 <td className="border border-gray-300 px-4 py-2 text-xs">{formatDate(assignation.eventDateEnd)}</td>
                                                 <td className="border border-gray-300 px-4 py-2 text-xs print:hidden">
