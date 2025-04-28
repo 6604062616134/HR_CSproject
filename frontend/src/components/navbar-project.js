@@ -128,7 +128,7 @@ function NavbarProject({ fetchData }) {
 
                     {/* ปุ่มเพิ่มข้อมูล */}
                     <button
-                        className="px-3 py-1 bg-white text-sm text-black rounded-3xl shadow-lg hover:bg-green-600 hover:scale-105 hover:text-white transition-all duration-300 ease-in-out"
+                        className="px-3 py-1 bg-white text-xs text-black rounded-3xl shadow-lg hover:bg-green-600 hover:scale-105 hover:text-white transition-all duration-300 ease-in-out"
                         onClick={handleModalToggle}
                     >
                         เพิ่มข้อมูลนักศึกษา
@@ -139,7 +139,7 @@ function NavbarProject({ fetchData }) {
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-3xl shadow-lg w-[800px]">
-                        <h2 className="text-lg font-bold mb-4 no-print">เพิ่มข้อมูลนักศึกษา</h2>
+                        <div className="text-md font-bold mb-4 no-print">เพิ่มข้อมูลนักศึกษา</div>
                         <form onSubmit={handleSubmit}>
                             <div className="flex flex-wrap gap-4">
                                 <div className="flex-1 min-w-[150px]">
@@ -344,7 +344,7 @@ function NavbarProject({ fetchData }) {
                         className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded-3xl"
                         onClick={handleToggle}
                     >
-                        มอบหมายงาน
+                        กิจกรรมบุคลากร
                     </NavLink>
                     <NavLink
                         to="/project"

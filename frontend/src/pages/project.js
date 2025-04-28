@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import NavbarProject from '../components/navbar-project';
 
@@ -9,6 +9,7 @@ function Project() {
     const [searchTerm, setSearchTerm] = useState(''); // สำหรับช่องค้นหา
     const [searchTermYear, setSearchTermYear] = useState(''); // สำหรับดรอปดาวน์เลือกเทอม
     const [isDropdownOpen, setIsDropdownOpen] = useState(false); // สำหรับเปิด/ปิดดรอปดาวน์
+    const dropdownRef = useRef(null); // สำหรับดรอปดาวน์
 
     const fetchData = async () => {
         try {
@@ -21,6 +22,19 @@ function Project() {
 
     useEffect(() => {
         fetchData();
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false); // ปิดดรอปดาวน์
+            }
+        };
+    
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
     }, []);
 
     const filteredStudents = students.filter((student) => {
@@ -71,7 +85,7 @@ function Project() {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-gray-100">
+        <div className="flex flex-col h-screen">
             <NavbarProject fetchData={fetchData} className="print:hidden" />
             <div className="flex flex-col p-4 mt-16 print:mt-0 flex-grow w-full">
                 <div className="flex flex-row gap-4 mb-4">
@@ -84,7 +98,7 @@ function Project() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="flex-grow px-4 py-2 border rounded-3xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                        <div className="relative">
+                        <div className="relative" ref={dropdownRef}>
                             <div
                                 className="px-4 py-2 border rounded-3xl bg-white cursor-pointer focus:outline-none z-50 text-xs hover:bg-gray-100 hover:text-blue-600 transition-all duration-300 ease-in-out flex items-center justify-between"
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -214,10 +228,10 @@ function Project() {
                                     <h2 className="text-lg font-bold">แก้ไขข้อมูลนักศึกษา</h2>
                                     <button
                                         type="button"
-                                        className="px-3 py-1 bg-red-500 text-white text-sm rounded-3xl hover:bg-red-600 no-print transition-transform duration-300 hover:scale-105"
+                                        className="px-3 py-1 bg-red-500 text-white text-xs rounded-3xl hover:bg-red-600 no-print transition-transform duration-300 hover:scale-105"
                                         onClick={handleDeleteStudent}
                                     >
-                                        ลบข้อมูลทั้งหมด
+                                        ลบข้อมูล
                                     </button>
                                 </div>
                                 <form

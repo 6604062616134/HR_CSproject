@@ -137,7 +137,7 @@ function NavbarStaffProject() {
 
                     {/* ปุ่มเพิ่มข้อมูล */}
                     <button
-                        className="px-3 py-1 bg-white text-sm text-black rounded-3xl shadow-lg hover:bg-green-600 hover:scale-105 hover:text-white transition-all duration-300 ease-in-out"
+                        className="px-3 py-1 bg-white text-xs text-black rounded-3xl shadow-lg hover:bg-green-600 hover:scale-105 hover:text-white transition-all duration-300 ease-in-out"
                         onClick={handleModalToggle}
                     >
                         เพิ่มข้อมูล
@@ -314,7 +314,7 @@ function NavbarStaffProject() {
                             <div className="flex justify-end gap-4 mt-6">
                                 <button
                                     type="button"
-                                    className="px-4 py-2 bg-gray-300 rounded-3xl hover:bg-red-600 hover:scale-105 transition-all duration-300 ease-in-out"
+                                    className="px-4 py-2 bg-gray-300 rounded-3xl hover:text-white hover:bg-red-600 hover:scale-105 transition-all duration-300 ease-in-out"
                                     onClick={handleModalToggle}
                                 >
                                     ยกเลิก
@@ -349,7 +349,7 @@ function NavbarStaffProject() {
                         className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded-3xl"
                         onClick={handleToggle}
                     >
-                        มอบหมายงาน
+                        กิจกรรมบุคลากร
                     </NavLink>
                     <NavLink
                         to="/project"

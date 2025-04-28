@@ -99,7 +99,7 @@ function Navbar({ className = "" }) {
                         className="block py-2 px-4 text-white hover:bg-white hover:text-black rounded-3xl"
                         onClick={handleToggle}
                     >
-                        มอบหมายงาน
+                        กิจกรรมบุคลากร
                     </NavLink>
                     <NavLink
                         to="/project"

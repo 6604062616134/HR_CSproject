@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 import NavbarStaffProject from "../components/navbar-Staffproject";
 import axios from 'axios';
 
@@ -9,6 +9,7 @@ function StaffProject() {
     const [searchTerm, setSearchTerm] = useState(''); // เก็บคำค้นหา
     const [searchTermYear, setSearchTermYear] = useState(''); // เก็บค่าปีการศึกษาที่เลือก
     const [isDropdownOpen, setIsDropdownOpen] = useState(false); // สำหรับเปิด/ปิดดรอปดาวน์
+    const dropdownRef = useRef(null); // สำหรับดรอปดาวน์
 
     useEffect(() => {
         const fetchData = async () => {
@@ -22,6 +23,19 @@ function StaffProject() {
         };
 
         fetchData();
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false); // ปิดดรอปดาวน์
+            }
+        };
+    
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
     }, []);
 
     const handleEditClick = (item) => {
@@ -62,12 +76,12 @@ function StaffProject() {
     });
 
     return (
-        <div className="container mx-auto px-4 py-20">
+        <div className="container mx-auto w-full px-4 py-20">
             <NavbarStaffProject className="print:hidden" />
             <div className="flex items-center gap-4 mb-4">
-                <h1 className="text-xl font-bold">ตารางการตรวจโปรเจคสำหรับเจ้าหน้าที่</h1>
+                <h1 className="text-xl ml-8 font-bold">ตารางการตรวจโปรเจคสำหรับเจ้าหน้าที่</h1>
                 <div className="flex items-center gap-4">
-                    <div className="relative flex-grow">
+                    <div className="relative flex-grow print:hidden">
                         <input
                             type="text"
                             placeholder="ค้นหา..."
@@ -76,9 +90,9 @@ function StaffProject() {
                             className="w-full px-4 py-2 border text-xs rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-                    <div className="relative">
+                    <div className="relative" ref={dropdownRef}>
                         <div
-                            className="px-4 py-2 border rounded-3xl bg-white cursor-pointer focus:outline-none z-50 text-xs hover:bg-gray-100 hover:text-blue-600 transition-all duration-300 ease-in-out flex items-center justify-between"
+                            className="px-4 print:hidden py-2 border rounded-3xl bg-white cursor-pointer focus:outline-none z-50 text-xs hover:bg-gray-100 hover:text-blue-600 transition-all duration-300 ease-in-out flex items-center justify-between"
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         >
                             {searchTermYear || 'เลือกเทอม'}
@@ -121,61 +135,63 @@ function StaffProject() {
             </div>
             {/* ตารางแสดงข้อมูล */}
             <div className="overflow-x-auto flex-grow w-full">
-                <table className="w-full bg-white border border-gray-300 rounded-3xl print-cell">
-                    <thead>
-                        <tr className="bg-gray-200 text-gray-700">
-                            <th className="px-4 py-2 border text-xs">ชื่อโปรเจค</th>
-                            <th className="px-4 py-2 border text-xs">ชื่อนักศึกษา</th>
-                            <th className="px-4 py-2 border text-xs">รหัสนักศึกษา</th>
-                            <th className="px-4 py-2 border text-xs">ปีการศึกษา</th>
-                            <th className="px-4 py-2 border text-xs">อาจารย์</th>
-                            <th className="px-4 py-2 border text-xs">เจ้าหน้าที่</th>
-                            <th className="px-4 py-2 border text-xs">ตรวจ</th>
-                            <th className="px-4 py-2 border text-xs">หมายเหตุ</th>
-                            <th className="px-4 py-2 border text-xs print:hidden">แก้ไข</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredData.length > 0 ? (
-                            filteredData.map((item, index) => (
-                                <tr key={index} className="text-center">
-                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">
-                                        {item.thesisNameTH || '-'} <br /> {item.thesisNameEN || '-'}
-                                    </td>
-                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">
-                                        {item.studentName1 || '-'} <br /> {item.studentName2 || '-'}
-                                    </td>
-                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal">
-                                        {item.studentID_1 || '-'} <br /> {item.studentID_2 || '-'}
-                                    </td>
-                                    <td className="px-4 py-2 border text-xs text-center">{item.year || '-'}</td>
-                                    <td className="px-4 py-2 border text-xs text-center">{item.teacherName || '-'}</td>
-                                    <td className="px-4 py-2 border text-xs text-center">{item.staffName || '-'}</td>
-                                    <td className="px-4 py-2 border text-xs text-center">
-                                        {item.checked ? 'ตรวจแล้ว' : 'ยังไม่ตรวจ'}
-                                    </td>
-                                    <td className="px-4 py-2 border text-xs break-words whitespace-normal max-w-[200px]">
-                                        {item.note || '-'}
-                                    </td>
-                                    <td className="px-4 py-2 border text-xs text-center print:hidden">
-                                        <button
-                                            className="px-2 py-1 bg-[#000066] text-white rounded-3xl z-50 hover:scale-105 hover:bg-white hover:text-black shadow-lg transition-transform duration-300"
-                                            onClick={() => handleEditClick(item)}
-                                        >
-                                            แก้ไข
-                                        </button>
+                <div className="w-full px-2 md:px-8">
+                    <table className="w-full bg-white border border-gray-300 rounded-3xl print-cell">
+                        <thead>
+                            <tr className="bg-gray-200 text-gray-700">
+                                <th className="px-4 py-2 border text-xs">รหัสนักศึกษา</th>
+                                <th className="px-4 py-2 border text-xs">ชื่อนักศึกษา</th>
+                                <th className="px-4 py-2 border text-xs">ชื่อโปรเจค</th>
+                                <th className="px-4 py-2 border text-xs w-24">ปีการศึกษา</th>
+                                <th className="px-4 py-2 border text-xs w-24">อาจารย์ที่ปรึกษา</th>
+                                <th className="px-4 py-2 border text-xs w-24">เจ้าหน้าที่</th>
+                                <th className="px-4 py-2 border text-xs w-28">สถานะการตรวจ</th>
+                                <th className="px-4 py-2 border text-xs w-24">หมายเหตุ</th>
+                                <th className="px-4 py-2 border text-xs print:hidden w-24">แก้ไข</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredData.length > 0 ? (
+                                filteredData.map((item, index) => (
+                                    <tr key={index} className="text-center">
+                                        <td className="px-4 py-2 border text-xs break-words whitespace-normal">
+                                            {item.studentID_1 || '-'} <br /> {item.studentID_2 || '-'}
+                                        </td>
+                                        <td className="px-4 py-2 border text-xs break-words whitespace-normal">
+                                            {item.studentName1 || '-'} <br /> {item.studentName2 || '-'}
+                                        </td>
+                                        <td className="px-4 py-2 border text-xs break-words whitespace-normal">
+                                            {item.thesisNameTH || '-'} <br /> {item.thesisNameEN || '-'}
+                                        </td>
+                                        <td className="px-4 py-2 border text-xs text-center">{item.year || '-'}</td>
+                                        <td className="px-4 py-2 border text-xs text-center">{item.teacherName || '-'}</td>
+                                        <td className="px-4 py-2 border text-xs text-center">{item.staffName || '-'}</td>
+                                        <td className="px-4 py-2 border text-xs text-center">
+                                            {item.checked ? 'ตรวจแล้ว' : 'ยังไม่ตรวจ'}
+                                        </td>
+                                        <td className="px-4 py-2 border text-xs break-words whitespace-normal max-w-[200px]">
+                                            {item.note || '-'}
+                                        </td>
+                                        <td className="px-4 py-2 border text-xs text-center print:hidden">
+                                            <button
+                                                className="px-2 py-1 bg-[#000066] text-white rounded-3xl z-50 hover:scale-105 hover:bg-white hover:text-black shadow-lg transition-transform duration-300"
+                                                onClick={() => handleEditClick(item)}
+                                            >
+                                                แก้ไข
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="9" className="px-4 py-2 border text-center text-xs text-gray-500">
+                                        ไม่พบข้อมูล
                                     </td>
                                 </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="9" className="px-4 py-2 border text-center text-xs text-gray-500">
-                                    ไม่พบข้อมูล
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {isEditModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -183,7 +199,7 @@ function StaffProject() {
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-bold">แก้ไขข้อมูล</h2>
                             <button
-                                className="px-3 py-1 text-sm bg-red-600 text-white rounded-3xl hover:bg-gray-600 hover:scale-105 transition-all duration-300 ease-in-out"
+                                className="px-3 py-1 text-xs bg-red-600 text-white rounded-3xl hover:bg-gray-600 hover:scale-105 transition-all duration-300 ease-in-out"
                                 onClick={async () => {
                                     if (window.confirm('คุณต้องการลบข้อมูลนี้หรือไม่?')) {
                                         try {
@@ -355,14 +371,14 @@ function StaffProject() {
                             <div className="flex justify-end gap-4">
                                 <button
                                     type="button"
-                                    className="px-4 py-2 bg-gray-300 rounded-3xl hover:bg-gray-400 hover:scale-105 transition-all duration-300 ease-in-out"
+                                    className="px-4 py-2 bg-gray-300 rounded-3xl hover:bg-red-600 hover:text-white hover:scale-105 transition-all duration-300 ease-in-out"
                                     onClick={() => setIsEditModalOpen(false)}
                                 >
                                     ยกเลิก
                                 </button>
                                 <button
                                     type="button"
-                                    className="px-4 py-2 bg-[#000066] text-white rounded-3xl hover:bg-blue-600 hover:scale-105 transition-all duration-300 ease-in-out"
+                                    className="px-4 py-2 bg-[#000066] text-white rounded-3xl hover:bg-green-600 hover:scale-105 transition-all duration-300 ease-in-out"
                                     onClick={handleSaveEdit}
                                 >
                                     บันทึก

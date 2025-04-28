@@ -181,7 +181,7 @@ function Detail({ type }) {
                             {personDetail.t_AcademicRanks} {personDetail.t_name} <strong>{personDetail.t_code}</strong>
                         </p>
                     ) : (
-                        <p className="text-lg font-semibold text-left">{personDetail.s_name}</p>
+                        <p className="text-lg font-semibold mt-6 text-left">{personDetail.s_name}</p>
                     )}
                     <div className="flex flex-wrap items-center gap-4 pt-2">
                         <div>
@@ -266,6 +266,7 @@ function Detail({ type }) {
                                     })
                                     .map((assignation, index) => {
                                         const formatDate = (date) => {
+                                            if (!date) return '-';
                                             return new Intl.DateTimeFormat('th-TH', {
                                                 day: 'numeric',
                                                 month: 'numeric',
@@ -280,12 +281,25 @@ function Detail({ type }) {
                                                 <td className="border border-gray-300 px-4 py-2 text-xs">{assignation.docName}</td>
                                                 <td className="border border-gray-300 px-4 py-2 text-xs">{assignation.eventName}</td>
                                                 <td className="border border-gray-300 px-4 py-2 break-words whitespace-normal max-w-[200px] text-left text-xs">{assignation.detail}</td>
-                                                <td className="border border-gray-300 px-4 py-2 text-xs">{formatDate(assignation.eventDateStart)}</td>
-                                                <td className="border border-gray-300 px-4 py-2 text-xs">{formatDate(assignation.eventDateEnd)}</td>
+                                                <td className="border border-gray-300 px-4 py-2 text-xs">
+                                                    {assignation.eventDateStart ? formatDate(assignation.eventDateStart) : '-'}
+                                                </td>
+                                                <td className="border border-gray-300 px-4 py-2 text-xs">
+                                                    {assignation.eventDateEnd ? formatDate(assignation.eventDateEnd) : '-'}
+                                                </td>
                                                 <td className="border border-gray-300 px-4 py-2 text-xs print:hidden">
-                                                    <a href={assignation.linkFile} target="_blank" rel="noopener noreferrer" className="text-blue-500 text-xs hover:underline">
-                                                        ไฟล์ที่แนบ
-                                                    </a>
+                                                    {assignation.linkFile && assignation.linkFile !== '-' ? (
+                                                        <a
+                                                            href={assignation.linkFile}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-blue-500 text-xs hover:underline"
+                                                        >
+                                                            ไฟล์ที่แนบ
+                                                        </a>
+                                                    ) : (
+                                                        <span className="text-gray-500">-</span>
+                                                    )}
                                                 </td>
                                                 <td className="border border-gray-300 px-2 py-1 text-xs print:hidden">
                                                     <button
@@ -300,7 +314,7 @@ function Detail({ type }) {
                                     })
                             ) : (
                                 <tr>
-                                    <td colSpan="8" className="border border-gray-300 px-4 py-2 text-center">
+                                    <td colSpan="9" className="border border-gray-300 px-4 py-2 text-xs text-center">
                                         ไม่มีข้อมูล
                                     </td>
                                 </tr>
@@ -316,7 +330,7 @@ function Detail({ type }) {
                             <div className="flex justify-between items-center gap-4 mb-2">
                                 <h2 className="block text-lg font-semibold text-gray-700">แก้ไขข้อมูล</h2>
                                 <button
-                                    className="px-2 py-1 bg-red-500 text-white rounded-3xl shadow-lg hover:bg-red-600 text-xs"
+                                    className="px-2 py-1 bg-red-500 text-white rounded-3xl shadow-lg hover:bg-red-600 text-xs hover:scale-105 transition-transform duration-300"
                                     onClick={() => handleDelete(currentAssignation.a_number)}
                                 >
                                     ลบข้อมูล
@@ -391,16 +405,16 @@ function Detail({ type }) {
                             </div>
                             <div className="flex justify-end gap-4 mt-6">
                                 <button
-                                    className="px-4 py-2 bg-[#000066] text-white rounded-3xl shadow-lg hover:bg-green-600"
-                                    onClick={handleSave}
-                                >
-                                    บันทึก
-                                </button>
-                                <button
-                                    className="px-4 py-2 bg-gray-300 rounded-3xl -3xl shadow-lg hover:bg-gray-400"
+                                    className="px-4 py-2 bg-gray-300 rounded-3xl -3xl shadow-lg hover:bg-red-600 hover:scale-105 hover:text-white transition-transform duration-300"
                                     onClick={handleCloseModal}
                                 >
                                     ยกเลิก
+                                </button>
+                                <button
+                                    className="px-4 py-2 bg-[#000066] text-white rounded-3xl shadow-lg hover:text-white hover:scale-105 hover:bg-green-600 transition-transform duration-300"
+                                    onClick={handleSave}
+                                >
+                                    บันทึก
                                 </button>
                             </div>
                         </div>

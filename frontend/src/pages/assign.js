@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Navbar from '../components/navbar';
 
@@ -16,6 +16,8 @@ function Assign() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDropdownStaffOpen, setIsDropdownStaffOpen] = useState(false);
     const [link, setLink] = useState(''); // ลิงก์ Google Drive
+    const dropdownRef = useRef(null); // สำหรับดรอปดาวน์อาจารย์
+    const dropdownStaffRef = useRef(null); // สำหรับดรอปดาวน์เจ้าหน้าที่
 
     useEffect(() => {
         const fetchTeachers = async () => {
@@ -69,12 +71,28 @@ function Assign() {
         };
     }, [isDropdownStaffOpen]);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false); // ปิดดรอปดาวน์อาจารย์
+            }
+            if (dropdownStaffRef.current && !dropdownStaffRef.current.contains(event.target)) {
+                setIsDropdownStaffOpen(false); // ปิดดรอปดาวน์เจ้าหน้าที่
+            }
+        };
+    
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     const createAssignation = async () => {
         try {
             const response = await axios.post('http://localhost:8000/assignation/create', {
                 eventName,
-                eventDateStart,
-                eventDateEnd,
+                eventDateStart: eventDateStart || null, // หากไม่มีค่าให้ส่ง null
+                eventDateEnd: eventDateEnd || null,
                 a_number: number,
                 docName,
                 detail,
@@ -91,8 +109,8 @@ function Assign() {
     const handleSubmit = async (e) => {
         e.preventDefault(); // ป้องกันการรีเฟรชหน้า
 
-        // ตรวจสอบกรณีวันที่เริ่มต้นอยู่หลังวันที่สิ้นสุด
-        if (new Date(eventDateStart) > new Date(eventDateEnd)) {
+        // ตรวจสอบกรณีวันที่เริ่มต้นอยู่หลังวันที่สิ้นสุด (ถ้ากรอกทั้งสองวันที่)
+        if (eventDateStart && eventDateEnd && new Date(eventDateStart) > new Date(eventDateEnd)) {
             alert('วันที่เริ่มต้นต้องไม่อยู่หลังวันที่สิ้นสุด');
             return; // ยกเลิกการทำงานหากเงื่อนไขไม่ถูกต้อง
         }
@@ -157,7 +175,7 @@ function Assign() {
                     {/* ส่วนช่องกรอกข้อมูล */}
                     <div className="flex-1 space-y-6">
                         <div className="flex justify-between items-center">
-                            <h2 className="text-2xl font-semibold text-gray-800">แบบฟอร์มกำหนดกิจกรรม</h2>
+                            <h2 className="text-2xl font-semibold text-gray-800">กิจกรรมบุคลากร</h2>
                             <button
                                 type="button"
                                 onClick={handleReset}
@@ -186,7 +204,6 @@ function Assign() {
                                     value={eventDateStart}
                                     onChange={(e) => setEventDateStart(e.target.value)}
                                     className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-gray-300"
-                                    required
                                 />
                             </div>
                             <div className="flex-1">
@@ -196,7 +213,6 @@ function Assign() {
                                     value={eventDateEnd}
                                     onChange={(e) => setEventDateEnd(e.target.value)}
                                     className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-gray-300"
-                                    required
                                 />
                             </div>
                         </div>
@@ -239,7 +255,7 @@ function Assign() {
                         <div className="flex-1 p-4 rounded-3xl border relative h-[455px] overflow-visible">
                             <div className="flex items-center mb-4 gap-4">
                                 <h3 className="font-medium text-gray-800">อาจารย์ที่เลือก</h3>
-                                <div className="relative">
+                                <div className="relative" ref={dropdownRef}>
                                     <div
                                         className="px-2 py-1 border rounded-3xl bg-white cursor-pointer focus:outline-none shadow-lg z-50 text-xs hover:bg-gray-100 hover:text-blue-600 transition-all duration-300 ease-in-out flex items-center justify-between"
                                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -272,7 +288,7 @@ function Assign() {
                                     )}
                                 </div>
 
-                                <div className="relative">
+                                <div className="relative" ref={dropdownStaffRef}>
                                     <div
                                         className="px-2 py-1 border rounded-3xl bg-white cursor-pointer focus:outline-none shadow-md z-50 text-xs hover:bg-gray-100 hover:text-blue-600 transition-all duration-300 ease-in-out flex items-center justify-between"
                                         onClick={() => setIsDropdownStaffOpen(!isDropdownStaffOpen)}
