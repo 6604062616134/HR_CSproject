@@ -10,9 +10,8 @@ function NavbarStaffProject() {
     const [teachers, setTeachers] = useState([]);
     const [staff, setStaff] = useState([]);
     const [formData, setFormData] = useState({
-        datetime: '',
-        thesisnameTH: '',
-        thesisnameEN: '',
+        thesisNameTH: '',
+        thesisNameEN: '',
         studentCode1: '',
         studentCode2: '',
         FLname1: '',
@@ -20,6 +19,8 @@ function NavbarStaffProject() {
         MainMentor: '',
         year: '',
         note: '',
+        checked: '',
+        s_name: '',
     });
 
     useEffect(() => {
@@ -47,39 +48,38 @@ function NavbarStaffProject() {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); // ป้องกันการรีเฟรชหน้า
-
-        if (!formData.thesisnameTH && !formData.thesisnameEN) {
-            alert('กรุณากรอกชื่อปริญญานิพนธ์อย่างน้อย 1 ช่อง');
+        e.preventDefault();
+    
+        // ตรวจสอบว่ามีการกรอกข้อมูลในฟิลด์ที่จำเป็นหรือไม่
+        if (!formData.MainMentor || !formData.MainMentor.trim() || !formData.s_name || !formData.s_name.trim()) {
+            alert('กรุณากรอกข้อมูลอาจารย์ที่ปรึกษาและเจ้าหน้าที่');
             return;
         }
-
+    
+        // เตรียมข้อมูลที่จะส่งไปยัง Backend
+        const payload = {
+            thesisNameTH: formData.thesisNameTH.trim(),
+            thesisNameEN: formData.thesisNameEN.trim(),
+            studentCode1: formData.studentCode1.trim(),
+            studentCode2: formData.studentCode2.trim(),
+            FLname1: formData.FLname1.trim(),
+            FLname2: formData.FLname2.trim(),
+            MainMentor: formData.MainMentor.trim(),
+            year: formData.year.trim(),
+            note: formData.note.trim(),
+            checked: formData.checked === "true" ? 1 : 0,
+            s_name: formData.s_name.trim(),
+        };
+    
         try {
-            const response = await axios.post('http://localhost:8000/student/create', formData);
-            if (response.status === 200) {
+            const response = await axios.post('http://localhost:8000/staffproject/create', payload);
+            if (response.status === 201) {
                 alert('บันทึกข้อมูลสำเร็จ');
-                fetchData(); // โหลดข้อมูลใหม่
-                handleModalToggle(); // ปิด Modal อัตโนมัติ
-                setFormData({
-                    datetime: '',
-                    thesisnameTH: '',
-                    thesisnameEN: '',
-                    studentCode1: '',
-                    studentCode2: '',
-                    FLname1: '',
-                    FLname2: '',
-                    chairman: '',
-                    director: '',
-                    MainMentor: '',
-                    CoMentor: '',
-                    year: '',
-                    room: '',
-                    grade: '',
-                    note: '',
-                }); // เคลียร์ข้อมูลในฟอร์ม
+                setIsModalOpen(false); // ปิด modal
+                window.location.reload(); // รีเฟรชหน้าเว็บ
             }
         } catch (error) {
-            console.error('Error creating student thesis info:', error);
+            console.error('Error creating staff project:', error);
             alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
         }
     };
@@ -147,42 +147,37 @@ function NavbarStaffProject() {
             {/* Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-3xl shadow-lg w-[800px]">
+                    <div className="bg-white p-6 rounded-3xl shadow-lg w-[90%] max-w-[800px] overflow-auto">
                         <h2 className="text-lg font-bold mb-4 no-print">เพิ่มข้อมูลนักศึกษา</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="flex flex-wrap gap-4">
-                                <div className="flex-1 min-w-[150px]">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">วันที่สอบ</label>
-                                    <input
-                                        type="date"
-                                        name="datetime"
-                                        value={formData.datetime}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
+                                {/* ปริญญานิพนธ์เรื่อง (ไทย) */}
                                 <div className="flex-[2] min-w-[300px]">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">ปริญญานิพนธ์เรื่อง (ไทย)</label>
                                     <input
                                         type="text"
-                                        name="thesisnameTH"
-                                        value={formData.thesisnameTH}
+                                        name="thesisNameTH"
+                                        value={formData.thesisNameTH}
                                         onChange={handleChange}
                                         className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         placeholder="ชื่อปริญญานิพนธ์ (ไทย)"
                                     />
                                 </div>
+
+                                {/* ปริญญานิพนธ์เรื่อง (อังกฤษ) */}
                                 <div className="flex-[2] min-w-[300px]">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">ปริญญานิพนธ์เรื่อง (อังกฤษ)</label>
                                     <input
                                         type="text"
-                                        name="thesisnameEN"
-                                        value={formData.thesisnameEN}
+                                        name="thesisNameEN"
+                                        value={formData.thesisNameEN}
                                         onChange={handleChange}
                                         className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         placeholder="ชื่อปริญญานิพนธ์ (อังกฤษ)"
                                     />
                                 </div>
+
+                                {/* รหัสนักศึกษา 1 */}
                                 <div className="flex-1 min-w-[150px]">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">รหัสนักศึกษา 1</label>
                                     <input
@@ -194,6 +189,8 @@ function NavbarStaffProject() {
                                         placeholder="รหัสนักศึกษา 1"
                                     />
                                 </div>
+
+                                {/* รหัสนักศึกษา 2 */}
                                 <div className="flex-1 min-w-[150px]">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">รหัสนักศึกษา 2</label>
                                     <input
@@ -205,17 +202,34 @@ function NavbarStaffProject() {
                                         placeholder="รหัสนักศึกษา 2"
                                     />
                                 </div>
+
+                                {/* ชื่อ-นามสกุล (นักศึกษา) 1 */}
                                 <div className="flex-[2] min-w-[300px]">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล (นักศึกษา)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล (นักศึกษา) 1</label>
                                     <input
                                         type="text"
                                         name="FLname1"
                                         value={formData.FLname1}
                                         onChange={handleChange}
                                         className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder="ชื่อ-นามสกุล (นักศึกษา)"
+                                        placeholder="ชื่อ-นามสกุล (นักศึกษา)1"
                                     />
                                 </div>
+
+                                {/* ชื่อ-นามสกุล (นักศึกษา) 2 */}
+                                <div className="flex-[2] min-w-[300px]">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล (นักศึกษา) 2</label>
+                                    <input
+                                        type="text"
+                                        name="FLname2"
+                                        value={formData.FLname2}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="ชื่อ-นามสกุล (นักศึกษา)2"
+                                    />
+                                </div>
+
+                                {/* ปีการศึกษา */}
                                 <div className="flex-1 min-w-[150px]">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">ปีการศึกษา</label>
                                     <input
@@ -227,18 +241,87 @@ function NavbarStaffProject() {
                                         placeholder="ปีการศึกษา"
                                     />
                                 </div>
+
+                                {/* สถานะการตรวจสอบ และ อาจารย์ที่ปรึกษา */}
+                                <div className="flex w-full gap-4">
+                                    {/* สถานะการตรวจสอบ */}
+                                    <div className="flex-1 min-w-[150px]">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">สถานะการตรวจสอบ</label>
+                                        <div className="flex items-center gap-4">
+                                            <label className="flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="checked"
+                                                    value="true"
+                                                    checked={formData.checked === "true"}
+                                                    onChange={handleChange}
+                                                    className="mr-2"
+                                                />
+                                                ตรวจแล้ว
+                                            </label>
+                                            <label className="flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="checked"
+                                                    value="false"
+                                                    checked={formData.checked === "false"}
+                                                    onChange={handleChange}
+                                                    className="mr-2"
+                                                />
+                                                ยังไม่ตรวจ
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {/* อาจารย์ที่ปรึกษา */}
+                                    <div className="flex-1 min-w-[200px]">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">อาจารย์ที่ปรึกษา</label>
+                                        <input
+                                            type="text"
+                                            name="MainMentor"
+                                            value={formData.MainMentor}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="รหัสอาจารย์ที่ปรึกษา"
+                                        />
+                                    </div>
+
+                                    {/* เจ้าหน้าที่ */}
+                                    <div className="flex-1 min-w-[200px]">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">เจ้าหน้าที่</label>
+                                        <input
+                                            type="text"
+                                            name="s_name"
+                                            value={formData.s_name}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="ชื่อเจ้าหน้าที่"
+                                        />
+                                    </div>
+                                </div>
+                                {/* หมายเหตุ */}
+                                <div className="w-full">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">หมายเหตุ</label>
+                                    <textarea
+                                        name="note"
+                                        value={formData.note}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="หมายเหตุ"
+                                        rows="3"
+                                    />
+                                </div>
                             </div>
                             <div className="flex justify-end gap-4 mt-6">
                                 <button
                                     type="button"
-                                    className="px-4 py-2 bg-gray-300 rounded-3xl hover:bg-gray-400"
+                                    className="px-4 py-2 bg-gray-300 rounded-3xl hover:bg-red-600 hover:scale-105 transition-all duration-300 ease-in-out"
                                     onClick={handleModalToggle}
                                 >
                                     ยกเลิก
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-blue-500 text-white rounded-3xl hover:bg-blue-600"
+                                    className="px-4 py-2 bg-[#000066] text-white rounded-3xl hover:bg-blue-600 hover:scale-105 transition-all duration-300 ease-in-out"
                                 >
                                     บันทึก
                                 </button>

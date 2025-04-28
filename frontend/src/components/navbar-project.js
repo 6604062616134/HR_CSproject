@@ -37,13 +37,14 @@ function NavbarProject({ fetchData }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // ป้องกันการรีเฟรชหน้า
-
-        // ตรวจสอบว่ากรอกอย่างน้อยหนึ่งช่องใน thesisnameTH หรือ thesisnameEN
-        if (!formData.thesisnameTH && !formData.thesisnameEN) {
-            alert('กรุณากรอกชื่อปริญญานิพนธ์อย่างน้อย 1 ช่อง');
+    
+        // ตรวจสอบว่ามีการกรอกข้อมูลในฟิลด์ใดฟิลด์หนึ่งหรือไม่
+        const isFormEmpty = Object.values(formData).every((value) => value.trim() === '');
+        if (isFormEmpty) {
+            alert('กรุณากรอกข้อมูลอย่างน้อย 1 ช่อง');
             return;
         }
-
+    
         try {
             const response = await axios.post('http://localhost:8000/student/create', formData);
             if (response.status === 200) {
@@ -112,20 +113,6 @@ function NavbarProject({ fetchData }) {
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
     };
-
-    // const handleAddStudentInfo = async (formData) => {
-    //     try {
-    //         const response = await axios.post('http://localhost:8000/student/create', formData);
-    //         if (response.status === 200) {
-    //             alert('บันทึกข้อมูลสำเร็จ');
-    //             // โหลดข้อมูลใหม่หลังจากเพิ่มข้อมูล
-    //             fetchData();
-    //         }
-    //     } catch (error) {
-    //         console.error('Error creating student thesis info:', error);
-    //         alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
-    //     }
-    // };
 
     return (
         <div>
@@ -322,14 +309,14 @@ function NavbarProject({ fetchData }) {
                             <div className="flex justify-end gap-4 mt-6">
                                 <button
                                     type="button"
-                                    className="px-4 py-2 bg-gray-300 rounded-3xl hover:bg-gray-400"
+                                    className="px-4 py-2 bg-gray-300 rounded-3xl hover:bg-gray-400 hover:scale-105 transition-all duration-300 ease-in-out"
                                     onClick={handleModalToggle}
                                 >
                                     ยกเลิก
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-blue-500 text-white rounded-3xl hover:bg-blue-600"
+                                    className="px-4 py-2 bg-[#000066] text-white rounded-3xl hover:bg-blue-600 hover:scale-105 transition-all duration-300 ease-in-out"
                                 >
                                     บันทึก
                                 </button>

@@ -63,17 +63,17 @@ function Detail({ type }) {
 
     const filteredAssignations = assignations.filter((assignation) => {
         const eventStart = new Date(assignation.eventDateStart);
-        const eventEnd = new Date(assignation.eventDateEnd);
-
         const filterStart = filterStartDate ? new Date(filterStartDate + 'T00:00:00') : null;
-        const filterEnd = filterEndDate ? new Date(filterEndDate + 'T23:59:59') : null;
-
-        if (!filterStart && !filterEnd) return true;
-
         // กรณีเลือกเฉพาะวันที่เริ่มต้น
         if (filterStart && !filterEnd) {
             return eventStart >= filterStart;
         }
+        const filterEnd = filterEndDate ? new Date(filterEndDate + 'T23:59:59') : null;
+        const eventEnd = new Date(assignation.eventDateEnd);
+
+
+        if (!filterStart && !filterEnd) return true;
+
 
         // กรณีเลือกทั้งเริ่มต้นและสิ้นสุด
         if (filterStart && filterEnd) {
